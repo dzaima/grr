@@ -1,0 +1,31 @@
+split { e=true w=0.6 d=h
+  split { e=true w=0.7 d=v
+    tabbed { m=a s=0
+      source { f=true }
+    }
+    split { e=true w=0.53 d=h
+      tabbed { m=a s=2
+        registers { }
+        memory { }
+        log { mode=debugger }
+        log { mode=process }
+      }
+      tabbed { m=a s=0
+        breakpoints { }
+        threads { }
+        history { }
+        log { mode=raw }
+      }
+    }
+  }
+  split { e=true w=0.5 d=v
+    tabbed { m=a s=0
+      stack { }
+      checkpoints { }
+      config { }
+    }
+    tabbed { m=a s=0
+      asm { }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+split { e=true w=0.58 d=h
+  split { e=true w=0.7 d=v
+    tabbed { m=a s=0
+      source { f=true }
+    }
+    split { e=true w=0.6 d=h
+      tabbed { m=a s=0
+        perfsyms { }
+        log { mode=debugger }
+        log { mode=raw }
+      }
+      tabbed { m=a s=0
+        config { }
+      }
+    }
+  }
+  tabbed { m=a s=0
+    asm { }
+  }
+}

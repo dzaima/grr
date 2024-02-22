@@ -1,0 +1,3 @@
+[submodule "UIClone"]
+	path = UIClone
+	url = https://github.com/dzaima/UI.git

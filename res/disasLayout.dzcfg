@@ -1,0 +1,19 @@
+split { e=true w=0.6 d=h
+  split { e=true w=0.81166506 d=v
+    tabbed { m=a s=0
+      source { f=true }
+    }
+    split { e=true w=0.5 d=h
+      tabbed { m=a s=0
+        log { mode=debugger }
+        log { mode=raw }
+      }
+      tabbed { m=a s=0
+        config {  }
+      }
+    }
+  }
+  tabbed { m=a s=0
+    asm { o=true a="OFF" }
+  }
+}

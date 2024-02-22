@@ -1,0 +1,37 @@
+split { e=true w=0.6 d=h
+  split { e=true w=0.7 d=v
+    split { e=true w=0.93031365 d=v
+      tabbed { m=a s=0
+        source { f=true }
+      }
+      tabbed { m=m s=0
+        timeline { }
+      }
+    }
+    split { e=true w=0.53 d=h
+      tabbed { m=a s=2
+        registers { }
+        memory { }
+        log { mode=debugger }
+        timelineManager { }
+      }
+      tabbed { m=a s=0
+        breakpoints { }
+        log { mode=raw }
+        history { }
+        threads { }
+        log { mode=process }
+      }
+    }
+  }
+  split { e=true w=0.5 d=v
+    tabbed { m=a s=0
+      stack { }
+      checkpoints { }
+      config { }
+    }
+    tabbed { m=a s=0
+      asm { }
+    }
+  }
+}

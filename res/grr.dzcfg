@@ -1,0 +1,548 @@
+str.defaultEM = 12
+
+grr {
+  codeFamily = "DejaVu Sans Mono"
+  
+  keys {
+    toStart   = { "F1" }
+    contF     = { "F2" }
+    contB     = { "shift+F2" }
+    insF      = { "F5" }
+    insB      = { "shift+F5" }
+    insOverF  = { "F6" }
+    insOverB  = { "shift+F6" }
+    lineF     = { "F7" }
+    lineB     = { "shift+F7" }
+    lineOverF = { "F8" }
+    lineOverB = { "shift+F8" }
+    finishF   = { "F9" }
+    finishB   = { "shift+F9" }
+    break     = { "F3" }
+    focusTimeline = { "ctrl+." }
+    saveLayout = { "ctrl+shift+s" }
+    fontPlus = { "ctrl+shift+=" "ctrl+plus" }
+    fontMinus = { "ctrl+minus" }
+  }
+  
+  repl.keys {
+    prev = { "up" }
+    next = { "down" }
+  }
+  
+  rrToolbar = h { alY=center h=min
+    btn { id=toB   text { family=grr.codeFamily "«" } } " "
+    btn { id=runB  text { family=grr.codeFamily "◁" } } " "
+    btn { id=pause "break" } " "
+    // btn { id=pause text { family=grr.codeFamily "break" } } " "
+    btn { id=runF  text { family=grr.codeFamily "▷" } }
+    "   ins: "
+    btn { id=iStepB text { family=grr.codeFamily "←" } } " "
+    btn { id=iStepF text { family=grr.codeFamily "→" } } " "
+    "   line: "
+    btn { id=lStepB text { family=grr.codeFamily "←" } } " "
+    btn { id=lStepF text { family=grr.codeFamily "→" } } " "
+    "   fn: "
+    btn { id=fStepB text { family=grr.codeFamily "←" } } " "
+    btn { id=fStepF text { family=grr.codeFamily "→" } } " "
+    btn { id=toFn "view fn" }
+    "   checkpoints: "
+    btn { id=mkCp "new" } " "
+    btn { id=toCp "to last" }
+    "   status: " text { id=status "unknown" }
+    text { id=timeDesc "   time: " } text { id=time "unknown" }
+  }
+  
+  gdbToolbar = h { alY=center h=min
+    btn { id=toB   text { family=grr.codeFamily "«" } } " "
+    btn { id=pause "break" } " "
+    btn { id=runF  text { family=grr.codeFamily "▷" } } " "
+    btn { id=iStepF "next ins" } " "
+    btn { id=lStepF "next line" } " "
+    btn { id=fStepF "finish fn" } " "
+    btn { id=toFn "view fn" }
+    "   checkpoints: "
+    btn { id=mkCp "new" } " "
+    btn { id=toCp "to last" }
+    "   status: " text { id=status "unknown" }
+    text { id=timeDesc "   time: " } text { id=time "unknown" }
+  }
+  
+  
+  
+  uiDebugger = v { bg=#333
+    pad { y=.05em x=.2em
+      id=toolbar
+    }
+    h { id=tree "???" }
+  }
+  
+  uiPerf = v { bg=#333
+    id=tree "???"
+  }
+  
+  uiMain = v { "(no layout loaded)" }
+  
+  search.maxSymbols = 200
+  toFn.ui = pad { bg=bg.back all=.5em
+    v { w=50em pad=.5em
+      grr.$searchField {}
+      grr.$searchRes { h=25em }
+    }
+  }
+  
+  $searchField = scroll { h=min x=hidden y=off liveTextfield { id=name family=grr.codeFamily } }
+  $searchRes = scroll { v { id=list } h=$h }
+  
+  $textEntryLine = h { pad=0.2em h=min alY=center $t scroll { y=off x=hidden textfield { id=$id family=grr.codeFamily } } }
+  $labeledCheckbox = label { h { pad=0.2em alY=center checkbox { id=$id }       h=min $t } for=$id }
+  $labeledRadio    = label { h { pad=0.2em alY=center radio { id=$id for=$for } h=min $t } for=$id }
+  
+  asm {
+    regHoverBg = bg.sel
+    addrCol = #7277E0
+    arrowCol = str.color
+    arrowDispCol = #207CCC
+    countCol = #A0A0A0
+    slowCol = #60F00000
+    slowBarCol = #e0F00000
+  }
+  
+  list {
+    bgSel = #182850
+    bgSelFocus = #183270
+    bgActive = #282923
+    keys {
+      up = { "up" }
+      down = { "down" }
+      first = { "home" }
+      last = { "end" }
+      click = { "enter" }
+      copy = { "ctrl+c" }
+      sum = { "ctrl+s" }
+      selectAll = textarea.keys.selectAll
+    }
+  }
+  
+  colors {
+    symbolCol = #e0bf55
+    valDefined = #dfd
+    valHalfDefined = #ff6
+    valUndefined = #f88
+  }
+  
+  stack {
+    unimportant = str.colorDisabled
+    argValCol = #dddd6c
+    argValColFaded = #909070
+    addrCol = #7277e0
+    fnNameCol = grr.colors.symbolCol
+    filePathCol = #188710
+    
+    line = text { family=grr.codeFamily
+      text { id=prefix }
+      text { id=addr color=grr.stack.addrCol }
+      " in "
+      text { id=func color=grr.stack.fnNameCol }
+      "("
+      text { id=args color=grr.stack.unimportant }
+      ")"
+      text { id=ifFile }
+    }
+    argOnlyType = text {
+      text { id=type }
+    }
+    argType = text {
+      text { id=type }
+      " "
+      text { id=name color=str.color }
+    }
+    argVal = text {
+      text { id=name color=str.color }
+      "="
+      text { id=value color=grr.stack.argValCol }
+    }
+    argSep = text { ", " }
+    ifFile = text {
+      " at "
+      text { id=file color=grr.stack.filePathCol }
+      text { id=line }
+    }
+  }
+  
+  entry {
+    keys {
+      copy = { "ctrl+c" }
+      delete = { "del" }
+      click = { "enter" }
+      toggle = { "t" }
+    }
+  }
+  tabs {
+    registers {
+      ui = scroll {
+        v { id=list }
+      }
+      reg = text { family=grr.codeFamily
+        text { id=name color=#e0bf55 }
+        " "
+        text { id=value }
+      }
+    }
+    
+    breakpoints {
+      colEnabled = #62FC37
+      colDisabled = #FC6F5D
+      ui = scroll { pad { all=.2em
+        v {
+          h { h=min pad=.2em
+            btn { "add breakpoint" id=addBreak }
+            // btn { "watch expression" id=watchExpr }
+            btn { "watch address" id=watchAddr }
+          }
+          v { id=list }
+        }
+      }}
+      
+      addBreakMenu {
+        ui = pad { bg=bg.back all=.5em
+          v { w=50em h=10em pad=.2em
+            grr.$searchField {}
+            pad { x=1em
+              h { alX=center
+                label { h { alX=center checkbox { id=hardware }  h=min " Hardware" } for=hardware }
+                label { h { alX=center checkbox { id=temporary } h=min " Temporary" } for=temporary }
+                label { h { alX=center checkbox { id=enabled enabled=true } h=min " Enabled" } for=enabled }
+              }
+            }
+            grr.$searchRes { h=25em }
+          }
+        }
+        keys {
+          close = { "esc" }
+          accept = { "enter" }
+          toggleHardware = { "alt+h" }
+          toggleTemporary = { "alt+t" }
+          toggleEnabled = { "alt+e" }
+        }
+      }
+      
+      watchAddrMenu {
+        ui = pad { bg=bg.back all=.5em y=.3em
+          v { w=30em h=10em pad=.2em
+            grr.$textEntryLine { t="Address:" id=addr }
+            grr.$textEntryLine { t="Size:" id=size }
+            label { h { checkbox { id=read               } h=min " Read" } for=read }
+            label { h { checkbox { id=write enabled=true } h=min " Write" } for=write }
+          }
+        }
+        keys {
+          toggleRead = { "alt+r" }
+          toggleWrite = { "alt+w" }
+          size1 = { "alt+1" }
+          size2 = { "alt+2" }
+          size4 = { "alt+4" }
+          size8 = { "alt+8" }
+        }
+      }
+      
+      itemEnabled  = text { "✓ " color=grr.tabs.breakpoints.colEnabled }
+      itemDisabled = text { "x " color=grr.tabs.breakpoints.colDisabled }
+      item = text { family=grr.codeFamily text { id=desc } text { id=info } }
+      
+      watchNRead = text { ": " text { color=grr.stack.argValCol      id=new } }
+      watchORead = text { ": " text { color=grr.stack.argValColFaded id=new } }
+      
+      $watchWrite = text { ": " $t1 text { $p id=$i1 } $t2 text { $p id=$i2 } }
+      
+      watchNWriteF =       grr.tabs.breakpoints.$watchWrite { $t1={}        $t2={" → "}    i1=old i2=new p={color=grr.stack.argValCol} }
+      watchNWriteB =       grr.tabs.breakpoints.$watchWrite { $t1={}        $t2={" ← "}    i1=new i2=old p={color=grr.stack.argValCol} }
+      watchNWriteU =       grr.tabs.breakpoints.$watchWrite { $t1={" old="} $t2={"; new="} i1=old i2=new p={color=grr.stack.argValCol} }
+      watchOWriteF = text{ grr.tabs.breakpoints.$watchWrite { $t1={}        $t2={" → "}    i1=old i2=new p={} } color=grr.stack.argValColFaded }
+      watchOWriteB = text{ grr.tabs.breakpoints.$watchWrite { $t1={}        $t2={" ← "}    i1=new i2=old p={} } color=grr.stack.argValColFaded }
+      watchOWriteU = text{ grr.tabs.breakpoints.$watchWrite { $t1={" old="} $t2={"; new="} i1=old i2=new p={} } color=grr.stack.argValColFaded }
+    }
+    
+    stack {
+      ui = scroll {
+        v { id=list }
+      }
+    }
+    
+    timelineManager {
+      runBtnOff = "Run"
+      runBtnOn = "Stop" 
+      ui = scroll { pad { all=.2em
+        v { pad=.2em h=min
+          // TODO thing for whether to highlight past positions colored by time since having been there
+          text { "event: " text { id=when "??" } ", ticks: " text { id=ticks "??" } ", tid: " text { id=tid "??" } }
+          grr.$labeledCheckbox { id=preview t="Preview state on hover" }
+          vsep{}
+          h { pad=.2em alY=center
+            "Flamegraph: "
+            btn { id=run "Run" }
+            " "
+            text { id=framegraphInfo "" }
+            " "
+            vl { btn { id=clear "Clear" } alX=right weight=0.001 }
+          }
+          h { pad=.2em alY=center
+            "Mode: "
+            btn { id=mode "ticks" }
+          }
+          grr.$labeledCheckbox { id=merge t="Merge equal symbols" }
+          // grr.$labeledCheckbox { id=trim t="Trim frames not on adjacent samples" }
+          grr.$labeledCheckbox { id=freeze t="Freeze" }
+          grr.$labeledCheckbox { id=local t="Local" }
+          grr.$textEntryLine { t="Coarse resolution:" id=resolutionCoarse }
+          grr.$textEntryLine { t="Fine resolution:" id=resolutionFine }
+        }
+      }}
+    }
+    
+    threads.keys {
+      selectThread = { "s" "f" }
+    }
+    
+    history {
+      ui = scroll {
+        pad { x=.2em
+          v {
+            h { h=min pad=.2em
+              btn { "Go to" id=goto }
+              // btn { "Preview" id=preview }
+            }
+            v { id=list }
+          }
+        }
+      }
+    }
+    
+    perfList {
+      ui = v {
+        pad { x=.2em u=.2em grr.$searchField {} }
+        scroll {
+          id=listPlace
+          text { "Loading..." }
+        }
+      }
+      
+      basicList = v { id=list h=min }
+      entry = text { family=grr.codeFamily
+        text { id=amount }
+        " "
+        text { id=name color=grr.colors.symbolCol }
+      }
+    }
+    
+    asm {
+      ui = asmOverlay { id=overlay
+        scroll {
+          id=placeScroll
+          x=on // TODO don't
+        }
+      }
+      menu {
+        base = {
+          mi { id=copyAddr "copy address" key={"a"} }
+        }
+        run = {
+          mi { id=break "add breakpoint" key={"b"} }
+          mi { id=contF "forwards continue to" key={"right"} }
+        }
+        rr = {
+          mi { id=contB "backwards continue to" key={"left"} }
+        }
+        copyNum = {
+          mi { id=copyHex "copy hex" key={"c"} }
+          mi { id=copyDec "copy decimal" key={"d"} }
+        }
+      }
+      keys {
+        toggleAddressMode = { "a" }
+        toggleAddressDisplay = { "r" }
+      }
+    }
+    
+    memory {
+      ui = v {
+        pad { x=.2em u=.2em grr.$searchField {} }
+        pad { id=place }
+      }
+    }
+    
+    config {
+      sep = 0.3em
+      
+      ui = scroll { pad { all=0.2em vl { pad=grr.tabs.config.sep
+        "Disassembly format:"
+        pad { x=0.3em h {
+          vl {
+            "Show address:"
+            grr.$labeledRadio { id=aDisp  for=aDisp t="never" }
+            grr.$labeledRadio { id=aDispK for=aDisp t="on known targets" }
+            grr.$labeledRadio { id=aDispA for=aDisp t="always" }
+          }
+          seph{ x=0.5em y=0.1em }
+          vl {
+            "Address format:"
+            grr.$labeledRadio { id=aFmt  for=aFmt t="hex address" }
+            grr.$labeledRadio { id=aFmtD for=aFmt t="dec offset" }
+            grr.$labeledRadio { id=aFmtH for=aFmt t="hex offset" }
+          }
+          seph{ x=0.5em y=0.1em }
+          vl { pad=0.1em
+            // grr.$textEntryLine { t="instr pad:" id=insPad }
+            grr.$labeledCheckbox { id=raw t="raw bytes" }
+            grr.$textEntryLine { t="raw pad:" id=rawPad }
+          }
+        }}
+        
+        vl { id = modeListPlace }
+        
+        vl { id = modeSpecific }
+      }}}
+      
+      uiModes = vl { pad=grr.tabs.config.sep
+        sepv{}
+        vl {
+          "Mode:"
+          id=more
+        }
+      }
+      modeLine = grr.$labeledRadio { id=r for=r t="placeholder" }
+      
+      uiPerf = vl { pad=grr.tabs.config.sep
+        sepv{}
+        "Perf:"
+        pad { x=0.3em h {
+          vl {
+            grr.$labeledRadio { id=pn  for=pn t="count" }
+            grr.$labeledRadio { id=pff for=pn t="function %" }
+            grr.$labeledRadio { id=pfg for=pn t="global %" }
+          }
+//          seph{ x=0.5em y=0.1em }
+//          vl {
+//            grr.$labeledRadio { id=sourceC for=sourceC t="count" }
+//            grr.$labeledRadio { id=sourceW for=sourceC t="weight" }
+//          }
+        }}
+        stext {
+          "Selection statistics:\n"
+          "  " text {id=sn "0"}  " samples\n"
+          "  " text {id=ff "0%"} " of function\n"
+          "  " text {id=fg "0%"} " of global count\n"
+        }
+      }
+      
+      uiBranch = vl { pad=grr.tabs.config.sep
+        sepv{}
+        "Branch data:"
+        pad { x=0.3em h {
+          vl {
+            grr.$labeledRadio { id=bWc  for=bWc t="total retired branches" }
+            grr.$labeledRadio { id=bWm  for=bWc t="mispredict count" }
+            grr.$labeledRadio { id=bWpi for=bWc t="mispredict chance" }
+            grr.$labeledRadio { id=bWpf for=bWc t="fraction of function mispredicts" }
+            grr.$labeledRadio { id=bWpg for=bWc t="fraction of all mispredicts" }
+          }
+          seph{ x=0.5em y=0.1em }
+          vl {
+            grr.$labeledCheckbox { id=bTD t="direct" }
+            grr.$labeledCheckbox { id=bTI t="indirect" }
+          }
+        }}
+        grr.$textEntryLine { t="min retired to highlight:" id=highlightMin }
+        stext {
+          "Selection statistics:\n"
+          "  " text {id=sBc  "0"} " direct branches\n"
+          "  " text {id=sBcm "0"} " direct branch misses" text {id=fBc ""} "\n"
+          "  " text {id=sBi  "0"} " indirect branches\n"
+          "  " text {id=sBim "0"} " indirect branch misses" text {id=fBi ""} "\n"
+        }
+      }
+      
+      uiCache = vl { pad=grr.tabs.config.sep
+        sepv{}
+        "Cache data:"
+        pad { x=0.3em h {
+          vl {
+            grr.$labeledRadio { id=cI   for=cI t="icache" }
+            grr.$labeledRadio { id=cDR  for=cI t="dcache read" }
+            grr.$labeledRadio { id=cDW  for=cI t="dcache write" }
+            grr.$labeledRadio { id=cDRW for=cI t="dcache read+write" }
+          }
+          seph{ x=0.5em y=0.1em }
+          vl {
+            grr.$labeledRadio { id=la for=la t="access count" }
+            grr.$labeledRadio { id=l1 for=la t="L1 miss rate" }
+            grr.$labeledRadio { id=ll for=la t="LL miss rate" }
+          }
+        }}
+        grr.$textEntryLine { t="min accesses to highlight:" id=highlightMin }
+        stext {
+          "Selection statistics:\n"
+          "  " text {id=sa  "0"} " accesses\n"
+          "  " text {id=s1m "0"} " L1 misses" text {id=f1m ""} "\n"
+          "  " text {id=slm "0"} " LL misses" text {id=flm ""} "\n"
+        }
+      }
+    }
+    
+    gdb {
+      ui = v {
+        scroll { codearea  { id=code  family=grr.codeFamily } }
+        scroll { replfield { id=input family=grr.codeFamily } x=hidden y=off h=min }
+      }
+    }
+    
+    source {
+      ui = scroll {
+        sourcearea { id=code family=grr.codeFamily padLns=20 padChrs=30 }
+      }
+      highlightSelected = #252525
+      highlightHovered = #2a2a2a
+    }
+    
+    checkpoints {
+      ui = v {
+        h { h=min pad=.1em
+          btn { id=add "add" }
+          btn { id=del "delete" }
+          btn { id=go "go" }
+        }
+        scroll {
+          v { id=list }
+        }
+      }
+    }
+    
+    timeline {
+      bg = #252525
+      highlight = #555
+      
+      flamegraphEntH = 1em
+      flamegraphFontSize = 0.7em
+    }
+  }
+}
+
+tabbed.barBg = #484944
+
+btn {
+  style = rect
+  padX = .5em
+  padY = .2em
+}
+textarea.bgSelU = #222
+
+checkbox {
+  size = 1em
+  colOff = #545454
+  colHover = #5E5E5E
+  colOn = #4772B3
+  borderCol = #4E4E4E
+  borderW = .05em
+  round = .15em
+  path = "M0.201,0.536L0.267,0.471L0.423,0.623L0.771,0.226L0.847,0.291L0.423,0.762"
+  pathCol = #EEE
+}
