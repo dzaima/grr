@@ -122,7 +122,7 @@ public class JavaPrintAssembly {
             DisasFn.SourceMap sm = null;
             for (int k = cmap.sz-1; k >= 0; k--) {
               DisasFn.SourceMap c = cmap.get(k);
-              sm = new DisasFn.SourceMap(sm, c.shortFile, c.fullFile, c.line, c.col);
+              sm = new DisasFn.SourceMap(sm, c.shortFile, c.fullFile, c.fnName, c.line, c.col);
             }
             symMaps.add(new Pair<>(caddr, sm));
             cmap = null;
@@ -162,10 +162,13 @@ public class JavaPrintAssembly {
           }
           
           int i4 = n.indexOf("::");
-          String path = n.substring(0,i4).replace('.', '/')+".java";
+          String path = n.substring(0,i4).replace('.', '/');
+          int i5 = path.indexOf('$');
+          if (i5!=-1) path = path.substring(0, i5);
+          path+= ".java";
           
           if (cmap==null) cmap = new Vec<>();
-          cmap.add(new DisasFn.SourceMap(null, path, "/java-src/"+path, ln, -1));
+          cmap.add(new DisasFn.SourceMap(null, path, "/java-src/"+path, n.substring(i4+2), ln, -1));
         }
       }
       return new JavaPrintAssembly(syms);

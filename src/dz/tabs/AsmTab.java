@@ -65,7 +65,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
       if (fn==null || fn.ins==null || fn.ins.length==0) {
         asmList.setFn(null, null);
         overlay.setFn(null, null);
-        g.selectSource(null, stat0==null? null : stat0.sym.bin.file);
+        g.selectSourceMapStack(null, stat0==null? null : stat0.sym.bin.file);
         return;
       }
       
@@ -226,10 +226,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
     }
     
     HashMap<DisasFn.ParsedIns, Promise<Void>> locCache = new HashMap<>();
-    private static Location loc(long addr, SourceMap m) {
-      if (m==null) return null;
-      return new Location(addr, null, m.shortFile, m.fullFile, m.line==-1? null : m.line);
-    }
+    
     private void getSourceInfo(AsmEntry e0, Consumer<SourceMap> l) {
       if (e0.ins.map!=null) {
         l.accept(e0.ins.map);
@@ -240,7 +237,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
         g.d.curr.sourceInfo(i.s, i.e(), v -> {
           locCache.remove(i);
           if (v==null) e0.ins.map = SourceMap.NONE;
-          else e0.ins.map = new SourceMap(null, v.shortFile, v.fullFile, v.line==null? -1 : v.line, -1);
+          else e0.ins.map = new SourceMap(null, v.shortFile, v.fullFile, fn==null? null : fn.name, v.line==null? -1 : v.line, -1);
           r.set(null);
         });
       })).then(z -> l.accept(e0.ins.map));
@@ -248,7 +245,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
     
     protected void entryHoverS(AsmEntry e) {
       if (!g.d.status().running()) getSourceInfo(e, p -> {
-        g.hoverHighlightSource(SourceMap.unroll(p).map(c -> loc(e.ins.s, c)));
+        g.hoverHighlightSource(SourceMap.unroll(p).map(c -> SourceMap.loc(e.ins.s, c)));
       });
     }
     
@@ -257,9 +254,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
     }
     
     public void sourceToThis(AsmEntry e) {
-      getSourceInfo(e, o -> {
-        g.selectSource(loc(e.ins.s, o), stat==null? null : stat.sym.bin.file);
-      });
+      getSourceInfo(e, o -> g.selectSourceMapStack(o, stat==null? null : stat.sym.bin.file));
     }
     protected void entryClicked(AsmEntry e) {
       sourceToThis(e);

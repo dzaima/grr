@@ -21,7 +21,7 @@ import dzaima.utils.*;
 import dzaima.utils.options.*;
 
 import java.nio.file.*;
-import java.util.HashMap;
+import java.util.*;
 import java.util.function.*;
 
 public abstract class GdbLayout extends Layout {
@@ -44,6 +44,7 @@ public abstract class GdbLayout extends Layout {
     add.accept("timelineManager", g -> TimelineManagerTab.deserialize(this, g));
     add.accept("perfsyms", g -> new PerfListTab(this));
     add.accept("config", g -> ConfigTab.deserialize(this, g));
+    add.accept("sourceStack", g -> new SourceMapStackTab(this));
     if (this instanceof DebuggerLayout) {
       DebuggerLayout l = (DebuggerLayout) this;
       add.accept("breakpoints", g -> new BreakpointsTab(l));
@@ -164,13 +165,18 @@ public abstract class GdbLayout extends Layout {
     for (GrrTab<?> t : tabs) t.onSelectedThread(thr);
   }
   
-  public void selectSource(Location o, String bin) {
+  public void selectSourceMap(DisasFn.SourceMap map, String bin) {
     forTabs(SourceTab.class, t -> {
-      if (t.follow) {
-        if (o==null) t.toFileLine(null, null, 0, bin);
-        else t.toFileLine(o.shortFile, o.fullFile, o.line, bin);
-      }
+      if (!t.follow) return;
+      if (map==null) t.toFileLine(null, null, 0, bin);
+      else t.toFileLine(map.shortFile, map.fullFile, map.line, bin);
     });
+  }
+  public void selectSourceMapStack(DisasFn.SourceMap map, String bin) {
+    forTabs(SourceMapStackTab.class, t -> {
+      t.stack(map, bin);
+    });
+    selectSourceMap(map, bin);
   }
   public void hoverHighlightSource(Vec<Location> ls) {
     forTabs(SourceTab.class, t -> t.setHover(ls));

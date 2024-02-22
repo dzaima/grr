@@ -1,5 +1,6 @@
 package dz.general;
 
+import dz.debugger.Location;
 import dz.general.arch.Arch;
 import dz.utils.AddrMapper;
 import dzaima.utils.Vec;
@@ -62,10 +63,6 @@ public class DisasFn implements Comparable<DisasFn>, AddrMapper.Range {
     return s;
   }
   
-  public boolean contains(long addr) {
-    return addr >= s && addr < e;
-  }
-  
   public long s() { return s; }
   public long e() { return e; }
   
@@ -87,14 +84,16 @@ public class DisasFn implements Comparable<DisasFn>, AddrMapper.Range {
   }
   
   public static class SourceMap {
-    public static final SourceMap NONE = new SourceMap(null, null, null, -1, -1);
+    public static final SourceMap NONE = new SourceMap(null, null, null, null, -1, -1);
     public final SourceMap next; // to build a stack of source mappings if such is supported by debug info
     public final String shortFile, fullFile; // either both are null, or both are set
+    public final String fnName;
     public final int line, col; // -1 if unsupported
-    public SourceMap(SourceMap next, String shortFile, String fullFile, int line, int col) {
+    public SourceMap(SourceMap next, String shortFile, String fullFile, String fnName, int line, int col) {
       this.next = next;
       this.shortFile = shortFile;
       this.fullFile = fullFile;
+      this.fnName = fnName;
       this.line = line;
       this.col = col;
     }
@@ -106,6 +105,11 @@ public class DisasFn implements Comparable<DisasFn>, AddrMapper.Range {
         p = p.next;
       }
       return r;
+    }
+    
+    public static Location loc(long addr, SourceMap m) {
+      if (m==null) return null;
+      return new Location(addr, m.fnName, m.shortFile, m.fullFile, m.line==-1? null : m.line);
     }
   }
 }

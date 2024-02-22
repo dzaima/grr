@@ -2,6 +2,7 @@ package dz.tabs;
 
 import dz.debugger.*;
 import dz.gdb.*;
+import dz.general.DisasFn;
 import dz.general.arch.Arch;
 import dz.layouts.Layout;
 import dz.stat.*;

@@ -2,6 +2,7 @@ split { e=true w=0.58 d=h
   split { e=true w=0.7 d=v
     tabbed { m=a s=0
       source { f=true }
+      sourceStack { }
     }
     split { e=true w=0.6 d=h
       tabbed { m=a s=0

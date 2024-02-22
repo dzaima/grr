@@ -114,9 +114,10 @@ grr --cachegrind cachegrind-out input-executable # view results
 ```sh
 # program must not itself write anything to stdout!
 perf record java -XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly ... > java-output # record all functions
-perf record java -XX:+UnlockDiagnosticVMOptions -XX:CompileCommand=print,my.package.Foo::functionName ... > java-output # record a specific function
+perf record java -XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -XX:CompileCommand=print,my.package.Foo::functionName ... > java-output # record a specific function
 # record all functions in my.package.Foo and everything under jdk.incubator.vector with:
 #   -XX:CompileCommand=print,my.package.Foo::* -XX:CompileCommand=print,jdk.incubator.vector.*::*
+# -XX:+DebugNonSafepoints is implicit for PrintAssembly, but not for CompileCommand (it might help with additional source mapping)
 
 grr --perf . --jvm-out java-output --move /java-src/my/package:/path/to/my/package
 # the --move remaps my.package.Foo to /path/to/my/package/Foo.java (/java-src/ is a hard-coded prefix to differentiate from other paths)
