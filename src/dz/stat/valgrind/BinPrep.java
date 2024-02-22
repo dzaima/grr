@@ -1,12 +1,10 @@
 package dz.stat.valgrind;
 
 import dz.Main;
-import dz.gdb.Dbi;
 import dz.general.file.*;
 import dzaima.utils.*;
 
 import java.nio.file.*;
-import java.sql.Wrapper;
 
 import static dz.general.file.Elf.STT_FUNC;
 
@@ -32,7 +30,7 @@ public class BinPrep {
       }
     }
     
-    Dwarf.DwarfLineInfo lines = new Dwarf.DwarfLineInfo();
+    Dwarf.LineInfo lines = new Dwarf.LineInfo();
     Dwarf.DebugInfo info = new Dwarf.DebugInfo();
     // ElfWriter.ElfSyms syms = new ElfWriter.ElfSyms() {
     //   public String symTabName() { return ".symtab"; }
@@ -49,17 +47,14 @@ public class BinPrep {
     }
     
     try {
-      lines.finish();
-      info.finish();
-      
       Vec<String> cmd = Vec.of(
         "objcopy",
         "--add-section", GRR_SECTION+"=/dev/null"
       );
       
       Vec<Dwarf.DwarfSection> ss = new Vec<>();
-      ss.addAll(lines.allSections());
-      ss.addAll(info.allSections());
+      ss.addAll(lines.finish());
+      ss.addAll(info.finish());
       // ss.addAll(syms.finish().map(WrapperSection::new));
       
       Path[] ps = new Path[ss.sz];
