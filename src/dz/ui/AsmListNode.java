@@ -104,7 +104,7 @@ public abstract class AsmListNode extends Node implements SelectableListManager.
   public enum AddrDisp { NONE, KNOWN, ALL }
   public enum AddrFmt { ADDR, DEC_OFF, HEX_OFF }
   public AsmConfig cfg = AsmListNode.DEF_CONFIG;
-  public AsmConfig asmConfig() { return cfg; }
+  public AsmConfig asmConfig() { return stat!=null && stat.forceCfg()!=null? stat.forceCfg() : cfg; }
   
   public static final class AsmConfig {
     public final AddrDisp disp;
@@ -148,7 +148,7 @@ public abstract class AsmListNode extends Node implements SelectableListManager.
     
     leftW = Tools.ceil(cW*3); // arrows
     
-    if (cfg.disp!=AddrDisp.NONE) switch (cfg.fmt) { default: throw new RuntimeException();
+    if (asmConfig().disp!=AddrDisp.NONE) switch (asmConfig().fmt) { default: throw new RuntimeException();
       case ADDR:      leftW+= Tools.ceil(f.widthf(Tools.repeat('0', addrLen))); break;
       case DEC_OFF:   leftW+= Tools.ceil(f.widthf(Tools.repeat('0', Long.toString   (fn.e-fn.s).length())) + cW); break;
       case HEX_OFF:   leftW+= Tools.ceil(f.widthf(Tools.repeat('0', Long.toHexString(fn.e-fn.s).length())) + cW); break;
@@ -297,7 +297,7 @@ public abstract class AsmListNode extends Node implements SelectableListManager.
       
       // address
       String addr;
-      switch (cfg.disp) { default: throw new RuntimeException();
+      switch (asmConfig().disp) { default: throw new RuntimeException();
         case NONE: addr = null; break;
         case KNOWN:
           if (ins.from==null && !ins.likelyNewBB) {
@@ -306,7 +306,7 @@ public abstract class AsmListNode extends Node implements SelectableListManager.
           }
           // fallthrough
         case ALL:
-          switch (cfg.fmt) { default: throw new RuntimeException();
+          switch (asmConfig().fmt) { default: throw new RuntimeException();
             case ADDR: addr = DebuggerLayout.hexLong(ins.s, addrLen); break;
             case DEC_OFF:  addr = "+" + (ins.s-fn.s); break;
             case HEX_OFF:  addr = Long.toHexString(ins.s-fn.s); break;

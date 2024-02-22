@@ -61,8 +61,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
   }
   
   public void onSelectedFrame(Location l, boolean justFunction, StatSymbol stat0, boolean immediateSource) {
-    if (l==null) return;
-    g.getDisas(stat0==null? null : stat0.sym.bin, l, fn -> {
+    Consumer<DisasFn> onFn = fn -> {
       if (fn==null || fn.ins==null || fn.ins.length==0) {
         asmList.setFn(null, null);
         overlay.setFn(null, null);
@@ -85,7 +84,17 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
         asmList.activeEntry = e;
         if (stat!=null) e.onClick(SelectableEntry.CT.CLICK);
       }
-    });
+    };
+    
+    if (stat0!=null) {
+      DisasFn ins = stat0.disas();
+      if (ins!=null) {
+        onFn.accept(ins);
+        return;
+      }
+    }
+    
+    if (l!=null) g.getDisas(stat0==null? null : stat0.sym.bin, l, onFn);
   }
   
   private void setFn(DisasFn fn, StatSymbol stat) {
@@ -230,7 +239,8 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
       locCache.computeIfAbsent(e0.ins, i -> Promise.create(r -> {
         g.d.curr.sourceInfo(i.s, i.e(), v -> {
           locCache.remove(i);
-          e0.ins.map = new SourceMap(null, v.shortFile, v.fullFile, v.line==null? -1 : v.line, -1);
+          if (v==null) e0.ins.map = SourceMap.NONE;
+          else e0.ins.map = new SourceMap(null, v.shortFile, v.fullFile, v.line==null? -1 : v.line, -1);
           r.set(null);
         });
       })).then(z -> l.accept(e0.ins.map));
