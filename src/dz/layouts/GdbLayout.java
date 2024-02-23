@@ -7,7 +7,7 @@ import dz.gdb.ProcThread.StackFrame;
 import dz.general.*;
 import dz.general.arch.*;
 import dz.stat.*;
-import dz.stat.java.JavaPrintAssembly;
+import dz.general.java.JavaPrintAssembly;
 import dz.stat.perf.PerfStat;
 import dz.stat.valgrind.CachegrindData;
 import dz.tabs.*;

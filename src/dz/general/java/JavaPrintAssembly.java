@@ -1,4 +1,4 @@
-package dz.stat.java;
+package dz.general.java;
 
 import dz.general.DisasFn;
 import dz.general.file.*;

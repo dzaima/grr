@@ -1,4 +1,4 @@
-package dz.stat.java;
+package dz.general.java;
 
 import dzaima.utils.Log;
 

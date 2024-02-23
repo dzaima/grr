@@ -4,7 +4,7 @@ import dz.Main;
 import dz.debugger.Location;
 import dz.gdb.*;
 import dz.general.*;
-import dz.stat.java.JavaPrintAssembly;
+import dz.general.java.JavaPrintAssembly;
 import dz.tabs.PerfListTab;
 import dzaima.ui.gui.io.*;
 import dzaima.ui.node.types.tabs.SerializableTab;
