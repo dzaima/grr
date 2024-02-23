@@ -282,6 +282,7 @@ grr {
         v { id=list }
       }
       line = grr.frame.$base { ch = {
+        " "
         grr.frame.$fn{}
         "(" grr.frame.$args{} ")"
         grr.frame.$file{}
