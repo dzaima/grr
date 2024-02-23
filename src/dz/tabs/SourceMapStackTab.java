@@ -8,6 +8,8 @@ import dz.utils.LocationUtils;
 import dzaima.ui.node.Node;
 import dzaima.ui.node.types.tabs.SerializableTab;
 
+import java.util.HashMap;
+
 public class SourceMapStackTab extends GrrTab<GdbLayout> implements SerializableTab {
   public final Node node, list;
   public SourceMapStackTab(GdbLayout g) {
@@ -21,12 +23,20 @@ public class SourceMapStackTab extends GrrTab<GdbLayout> implements Serializable
   public String name() { return "source stack"; }
   public String serializeName() { return "sourceStack"; }
   
-  public void stack(DisasFn.SourceMap map, String bin) {
+  private final HashMap<DisasFn.SourceMap, SelectableEntry> m = new HashMap<>();
+  public void onSelectedSourceMapStack(DisasFn.SourceMap map, String bin) {
+    m.clear();
     list.clearCh();
     for (DisasFn.SourceMap c : DisasFn.SourceMap.unroll(map)) {
       Location l = DisasFn.SourceMap.loc(0, c);
-      list.add(new SrcEntryNode(LocationUtils.node("grr.tabs.srcStack.line", ctx, null, l, null), this, c, bin));
+      SrcEntryNode e = new SrcEntryNode(LocationUtils.node("grr.tabs.srcStack.line", ctx, null, l, null), this, c, bin);
+      m.put(c, e);
+      list.add(e);
     }
+  }
+  public void onSelectedSourceMap(DisasFn.SourceMap map, String bin) {
+    SelectableEntry n = m.get(map);
+    if (n!=null) n.select(SelectableEntry.CT.QUIET);
   }
   
   public static class SrcEntryNode extends SelectableEntry {

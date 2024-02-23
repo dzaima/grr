@@ -151,7 +151,7 @@ public class DebuggerLayout extends GdbLayout {
         Popup p = new SearchPopup(this) {
           public void accept(Location l, Vec<ProcThread.Arg> b1) {
             close();
-            for (GrrTab<?> t : g.tabs) t.onSelectedLocation(l, true, false);
+            for (GrrTab<?> t : g.tabs) t.onSelectedFunction(l, true, false);
           }
         };
         p.openVW(gc, this.m.ctx, gc.getProp("grr.toFn.ui").gr(), true);
@@ -195,7 +195,7 @@ public class DebuggerLayout extends GdbLayout {
           if (r1.sz==0) r1 = new Vec<>(r);
           r1.sort(Comparator.comparing(c -> c.a.sym.length()));
           Pair<Location, Vec<ProcThread.Arg>> r0 = r1.get(0);
-          for (GrrTab<?> t : tabs) t.onSelectedLocation(r0.a, true, false);
+          for (GrrTab<?> t : tabs) t.onSelectedFunction(r0.a, true, false);
         }
       });
     }

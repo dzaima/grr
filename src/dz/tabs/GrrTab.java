@@ -45,23 +45,33 @@ public abstract class GrrTab<T extends Layout> extends Tab {
   
   public /*open*/ void tick() { }
   
-  // DebuggerLayout
+  
+  
+  // sequence of things up to source mapping
+  public /*open*/ void onSelectedThread(ProcThread t) { }
+  public /*open*/ void onSelectedFunction(Location l, boolean justFunction, boolean nonTop) { } // incl. selectFrame
+  public /*open*/ void onSelectedSourceMapStack(DisasFn.SourceMap map, String bin) { }
+  public /*open*/ void onSelectedSourceMap(DisasFn.SourceMap map, String bin) { }
+  
+  
+  
   public /*open*/ void onNewArch() { }
   public /*open*/ void onAsmConfig(AsmListNode.AsmConfig config) { }
-  public /*open*/ void onStatusChange() { }
-  public /*open*/ void onSelectedThread(ProcThread t) { }
-  public /*open*/ void onSelectedLocation(Location l, boolean justFunction, boolean nonTop) { }
-  public /*open*/ void onGdbPrint(String s, GdbProcess.OutWhere b) { }
-  public /*open*/ void onModifiedBreakpoints() { }
+  
   public /*open*/ void onRegHover(Arch.RegInfo reg, boolean enable) { }
-  
+  public /*open*/ void onModifiedBreakpoints() { }
+  public /*open*/ void onStatusChange() { }
   public /*open*/ void onStopped(StopReason s) { }
+  public /*open*/ void onGdbPrint(String s, GdbProcess.OutWhere b) { }
   
-  // PerfLayout
-  public /*open*/ void onSelectedStatSymbol(Location l, StatSymbol stat) { }
+  public /*open*/ void onNewState(RecordedState st) { }
+  
+  
+  // stats
   public /*open*/ void onAddedStatSource(StatGlobal<?> d) { }
   public /*open*/ void onSelectedStatSource() { }
+  public /*open*/ void onSelectedStatSymbol(Location l, StatSymbol stat) { }
   public /*open*/ void onStatRefresh() { }
-
-  public /*open*/ void onNewState(RecordedState st) { }
+  
+  
 }

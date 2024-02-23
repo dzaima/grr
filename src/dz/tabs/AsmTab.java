@@ -53,7 +53,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
     nameUpdated();
   }
   
-  public void onSelectedLocation(Location l, boolean justFunction, boolean nonTop) {
+  public void onSelectedFunction(Location l, boolean justFunction, boolean nonTop) {
     onSelectedFrame(l==null? null : l.decrementedIf(nonTop), justFunction, g.getPerfSymbol(l), false);
   }
   public void onSelectedStatSymbol(Location l, StatSymbol stat) {

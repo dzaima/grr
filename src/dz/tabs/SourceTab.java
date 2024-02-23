@@ -1,6 +1,7 @@
 package dz.tabs;
 
 import dz.debugger.Location;
+import dz.general.DisasFn;
 import dz.layouts.*;
 import dz.ui.SourceAreaNode;
 import dzaima.ui.node.Node;
@@ -37,8 +38,14 @@ public class SourceTab extends GrrTab<Layout> implements SerializableTab {
     return new SourceTab(g, p.get("f").b());
   }
   
+  public void onSelectedSourceMap(DisasFn.SourceMap map, String bin) {
+    if (!follow) return;
+    if (map==null) toFileLine(null, null, 0, bin);
+    else toFileLine(map.shortFile, map.fullFile, map.line, bin);
+  }
+  
   private String currFilename;
-  public void onSelectedLocation(Location l, boolean justFunction, boolean nonTop) {
+  public void onSelectedFunction(Location l, boolean justFunction, boolean nonTop) {
     if (!follow) return;
     if (l==null) toFileLine(null, null, -1);
     else toFileLine(l.shortFile, l.fullFile, l.line);

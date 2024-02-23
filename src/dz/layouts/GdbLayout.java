@@ -157,8 +157,8 @@ public abstract class GdbLayout extends Layout {
     fViewed = f;
     fGdb = null; // to allow reselecting if it was changed in gdb
     for (GrrTab<?> t : tabs) {
-      if (f==null) t.onSelectedLocation(null, false, false);
-      else t.onSelectedLocation(f.l, false, f.nonTop);
+      if (f==null) t.onSelectedFunction(null, false, false);
+      else t.onSelectedFunction(f.l, false, f.nonTop);
     }
   }
   public void selectThread(ProcThread thr) {
@@ -166,16 +166,10 @@ public abstract class GdbLayout extends Layout {
   }
   
   public void selectSourceMap(DisasFn.SourceMap map, String bin) {
-    forTabs(SourceTab.class, t -> {
-      if (!t.follow) return;
-      if (map==null) t.toFileLine(null, null, 0, bin);
-      else t.toFileLine(map.shortFile, map.fullFile, map.line, bin);
-    });
+    for (GrrTab<?> t : tabs) t.onSelectedSourceMap(map, bin);
   }
   public void selectSourceMapStack(DisasFn.SourceMap map, String bin) {
-    forTabs(SourceMapStackTab.class, t -> {
-      t.stack(map, bin);
-    });
+    for (GrrTab<?> t : tabs) t.onSelectedSourceMapStack(map, bin);
     selectSourceMap(map, bin);
   }
   public void hoverHighlightSource(Vec<Location> ls) {
