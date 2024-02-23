@@ -20,6 +20,8 @@ public abstract class GrrTab<T extends Layout> extends Tab {
     this.g = g;
   }
   
+  public /*open*/ void tick() { }
+  
   public void onRightClick(Click cl) {
     PartialMenu m = new PartialMenu(g.gc);
     WindowSplitNode.onTabRightClick(m, this);
@@ -27,7 +29,7 @@ public abstract class GrrTab<T extends Layout> extends Tab {
     m.open(ctx, cl);
   }
   
-  public void focusSelectedEntry(Node node) {
+  public static void focusSelectedEntry(Node node) {
     for (Node c : node.ch) {
       if (c instanceof SelectableEntry && ((SelectableEntry) c).sel) {
         c.focusMe();
@@ -40,10 +42,7 @@ public abstract class GrrTab<T extends Layout> extends Tab {
     super.switchTo();
     onSelected();
   }
-  
   public /*open*/ void onSelected() { }
-  
-  public /*open*/ void tick() { }
   
   
   
@@ -60,11 +59,11 @@ public abstract class GrrTab<T extends Layout> extends Tab {
   
   public /*open*/ void onRegHover(Arch.RegInfo reg, boolean enable) { }
   public /*open*/ void onModifiedBreakpoints() { }
-  public /*open*/ void onStatusChange() { }
-  public /*open*/ void onStopped(StopReason s) { }
   public /*open*/ void onGdbPrint(String s, GdbProcess.OutWhere b) { }
   
   public /*open*/ void onNewState(RecordedState st) { }
+  public /*open*/ void onStatusChange() { }
+  public /*open*/ void onStopped(StopReason s) { }
   
   
   // stats
