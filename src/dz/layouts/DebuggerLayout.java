@@ -302,10 +302,26 @@ public class DebuggerLayout extends GdbLayout {
         onNextMainState.clear();
       }
       
-      statusChanged();
+      fGdb = fViewed = null;
+      
+      if (d.status().paused() && d.stopReason()!=null) for (GrrTab<?> t1 : tabs) t1.onStopped(d.stopReason());
+      String msg;
+      switch (d.status()) { default: msg = "??"; break;
+        case NONE: msg = "no executable loaded"; break;
+        case LOADED: msg = "not started"; break;
+        case PAUSED: msg = "paused"; break;
+        case RUNNING: msg = "running"; break;
+        case KILLED: msg = "no session"; break;
+      }
+      toolbar.ctx.id("status").replace(0, new StringNode(node.ctx, msg));
+      
+      if (d.isRR()) dr.set(() -> setTime("unknown"));
       for (GrrTab<?> t : tabs) t.onStatusChange();
     }
   }
+  final DelayedRun dr = new DelayedRun(this);
+  
+  
   
   public void getDisas(Binary bin, Location frame, Consumer<DisasFn> res) {
     getDisas(frame, FnCache.NameMode.PREFIX, sourceInjector(res));
@@ -327,26 +343,6 @@ public class DebuggerLayout extends GdbLayout {
     return Math.max(16 - Long.numberOfLeadingZeros(l)/4, 2);
   }
   
-  final DelayedRun dr = new DelayedRun(this);
-  public void statusChanged() {
-    fGdb = fViewed = null;
-    
-    if (d.status().paused() && d.stopReason()!=null) for (GrrTab<?> t : tabs) t.onStopped(d.stopReason());
-    String msg;
-    switch (d.status()) { default: msg = "??"; break;
-      case NONE: msg = "no executable loaded"; break;
-      case LOADED: msg = "not started"; break;
-      case PAUSED: msg = "paused"; break;
-      case RUNNING: msg = "running"; break;
-      case KILLED: msg = "no session"; break;
-    }
-    toolbar.ctx.id("status").replace(0, new StringNode(node.ctx, msg));
-    
-    if (d.isRR()) {
-      dr.set(() -> setTime("unknown"));
-      // if (d.status().paused()) st.elapsedTime(l -> setTime.accept(fmtNanos(l)));
-    }
-  }
   private void setTime(double d) {
     setTime(fmtSeconds(d));
     forTabs(TimelineTab.class, c -> c.currTime(d));
