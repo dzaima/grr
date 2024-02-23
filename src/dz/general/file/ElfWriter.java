@@ -133,7 +133,7 @@ public class ElfWriter {
         assert link!=-1;
       }
       r.w4(link); // sh_link
-      r.w4(0); // sh_info
+      r.w4(c.info()); // sh_info
       r.wS(0); // alignment
       r.wS(c.entsize(bits)); // sh_entsize
     }
@@ -153,6 +153,7 @@ public class ElfWriter {
   
   public abstract static class ElfSyms {
     Vec<ElfParser.Symbol> syms = new Vec<>();
+    { syms.add(new ElfParser.Symbol(0, 0, 0, "", 0)); }
     public void addSymbol(long s, long size, int info, String name, int sec) {
       syms.add(new ElfParser.Symbol(s, size, info, name, sec));
     }
@@ -168,7 +169,7 @@ public class ElfWriter {
           for (int i = 0; i < syms.sz; i++) {
             ElfParser.Symbol s = syms.get(i);
             if (w.bits==64) {
-              w.w4(tab.offs[i]);
+              w.w4(i==0? 0 : tab.offs[i]);
               w.w1(s.info);
               w.w1(0); // other
               w.w2(s.sec);
@@ -195,6 +196,7 @@ public class ElfWriter {
         public Data getData() { return symData; }
         protected Section link() { return strSec; }
         public long entsize(int bits) { return bits==64? 24 : 16; }
+        protected int info() { return syms.sz; }
       };
       
       return Vec.of(strSec, symSec);
@@ -221,6 +223,7 @@ public class ElfWriter {
     protected abstract long addr();
     protected Section link() { return null; }
     protected int flags() { return 0; }
+    protected int info() { return 0; }
     protected long size(long len) { return len; }
     public long entsize(int bits) { return 0; }
   }

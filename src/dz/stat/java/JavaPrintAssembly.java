@@ -63,7 +63,7 @@ public class JavaPrintAssembly {
       ElfWriter.Data d = new ElfWriter.Data() {
         public void writeTo(Elf.Writer w) { w.w(c.code); }
       };
-      w.addProg(Elf.PT_LOAD, Elf.PF_R|Elf.PF_W|Elf.PF_X, c.addrS, d);
+      w.addProg(Elf.PT_LOAD, Elf.PF_R|Elf.PF_X, c.addrS, d);
       int sec = w.addSec(new ElfWriter.Section() {
         protected int type() { return Elf.SHT_PROGBITS; }
         public String name() { return ".text."+(i[0]++); }
@@ -72,7 +72,7 @@ public class JavaPrintAssembly {
         protected int flags() { return Elf.SHF_ALLOC | Elf.SHF_EXECINSTR; }
       });
       
-      tab.addSymbol(c.addrS, c.size(), Elf.STT_FUNC, c.name, sec);
+      tab.addSymbol(c.addrS, c.size(), Elf.STT_FUNC|Elf.STB_LOCAL, c.name, sec);
     }
     
     

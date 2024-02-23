@@ -60,6 +60,10 @@ public class Elf {
   public static final int STT_COMMON   = 5;
   public static final int STT_TLS      = 6;
   
+  public static final int STB_LOCAL   = 0<<2;
+  public static final int STB_GLOBAL  = 1<<2;
+  public static final int STB_WEAK    = 2<<2;
+  
   
   public static final class Strtab {
     public final String[] unames;
