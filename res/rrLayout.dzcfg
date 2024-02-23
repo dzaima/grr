@@ -3,6 +3,7 @@ split { e=true w=0.6 d=h
     split { e=true w=0.93031365 d=v
       tabbed { m=a s=0
         source { f=true }
+        sourceStack { }
       }
       tabbed { m=m s=0
         timeline { }

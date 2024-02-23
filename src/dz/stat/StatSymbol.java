@@ -18,6 +18,7 @@ public abstract class StatSymbol { // relates via BasicSymbol, but can come from
   public int fmtWidth(float cW) { return Tools.ceil(cW*7.2f); }
   
   public abstract void onSelection(Vec<StatInstr> instrs);
+  public final void onOneSelected(StatInstr i) { onSelection(i==null? Vec.of() : Vec.of(i)); }
   public abstract void onAllSelected();
   
   public DisasFn disas() { return null; }

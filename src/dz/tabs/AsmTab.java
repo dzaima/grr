@@ -82,7 +82,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
         AsmListNode.AsmEntry e = (AsmListNode.AsmEntry) asmList.ch.get(idx);
         e.select(SelectableEntry.CT.QUIET);
         asmList.activeEntry = e;
-        if (stat!=null) e.onSelect(SelectableEntry.CT.CLICK);
+        if (stat!=null) stat.onOneSelected(e.getStat());
       }
     };
     
@@ -258,8 +258,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
     }
     protected void entryClicked(AsmEntry e) {
       sourceToThis(e);
-      StatInstr ins = e.getStat();
-      if (stat!=null) stat.onSelection(ins==null? Vec.of() : Vec.of(ins));
+      if (stat!=null) stat.onOneSelected(e.getStat());
     }
     
     protected void entryRangeSelected(int s, int e) {
