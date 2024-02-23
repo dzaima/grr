@@ -2,12 +2,13 @@ package dz.stat.java;
 
 import dz.general.DisasFn;
 import dz.general.file.*;
+import dz.utils.LineRequeue;
 import dzaima.utils.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.HashMap;
-import java.util.stream.Stream;
 
 public class JavaPrintAssembly {
   public final Vec<JSym> syms;
@@ -81,7 +82,7 @@ public class JavaPrintAssembly {
   }
   
   public static JavaPrintAssembly load(Path p) {
-    try (Stream<String> ls = Files.lines(p)) {
+    try {
       Vec<JSym> syms = new Vec<>();
       int mode = 0; // 0:none; 1:before-MachCode; 2:MachCode
       String comp = "", name = "??";
@@ -91,7 +92,8 @@ public class JavaPrintAssembly {
       Vec<DisasFn.SourceMap> cmap = null;
       long addr0 = -1;
       long caddr = -1;
-      for (String l : (Iterable<String>) ls::iterator) {
+      for (byte[] l0 : LineRequeue.iterable(p)) {
+        String l = new String(l0, StandardCharsets.UTF_8);
         if (mode!=2) {
           if (l.equals("----------------------------------- Assembly -----------------------------------") || l.startsWith("Compiled method (n/a)")) {
             name = "??";
@@ -174,12 +176,17 @@ public class JavaPrintAssembly {
           
           int i4 = n.indexOf("::");
           String path = n.substring(0,i4).replace('.', '/');
+          
+          String fname = n.substring(i4+2);
+          int i6 = path.lastIndexOf('/');
+          if (i6!=-1) fname = path.substring(i6+1)+"::"+fname;
+          
           int i5 = path.indexOf('$');
           if (i5!=-1) path = path.substring(0, i5);
           path+= ".java";
           
           if (cmap==null) cmap = new Vec<>();
-          cmap.add(new DisasFn.SourceMap(null, path, "/java-src/"+path, n.substring(i4+2), ln, -1));
+          cmap.add(new DisasFn.SourceMap(null, path, "/java-src/"+path, fname, ln, -1));
         }
       }
       return new JavaPrintAssembly(syms);
