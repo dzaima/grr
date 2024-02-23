@@ -1,11 +1,11 @@
 package dz.gdb;
 
 import dz.debugger.Location;
-import dz.debugger.Location.LocMode;
 import dz.gdb.Executable.*;
 import dz.gdb.GdbFormat.GVal;
 import dz.gdb.GdbProcess.Result;
 import dz.gdb.ProcThread.*;
+import dz.utils.LocationUtils;
 import dzaima.utils.*;
 
 import java.nio.file.Path;
@@ -184,7 +184,7 @@ public class Dbi {
   }
   
   private StackFrame readFrame(GVal c, long topAddr) {
-    Location l = Location.readFrom(LocMode.M1, c);
+    Location l = LocationUtils.readFrom(LocationUtils.LocMode.M1, c);
     return new StackFrame(c.getInt("level"), l, topAddr==-1 || Objects.equals(l.addr, topAddr));
   }
   
@@ -269,7 +269,7 @@ public class Dbi {
       opcodeRaw.length,
       v.getStr("inst"),
       opcodes? opcodeRaw : null,
-      Location.readFrom(LocMode.M2, srcInfo, v)
+      LocationUtils.readFrom(LocationUtils.LocMode.M2, srcInfo, v)
     );
   }
   private byte[] readBytes(String s) {
@@ -439,13 +439,13 @@ public class Dbi {
               args = new Vec<>();
               for (String c : ty.substring(ty.indexOf('(')+1, ty.length()-1).split(", ")) args.add(new Arg(c, null, null));
             }
-            res.add(new Pair<>(Location.readFrom(LocMode.M3, e0, e1), args));
+            res.add(new Pair<>(LocationUtils.readFrom(LocationUtils.LocMode.M3, e0, e1), args));
           }
         }
       }
       if (s.has("nondebug")) {
         for (GVal e1 : s.get("nondebug").vs()) {
-          res.add(new Pair<>(Location.readFrom(LocMode.M3, e1), null));
+          res.add(new Pair<>(LocationUtils.readFrom(LocationUtils.LocMode.M3, e1), null));
         }
       }
       got.accept(res);

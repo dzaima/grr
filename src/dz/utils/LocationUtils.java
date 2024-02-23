@@ -1,7 +1,7 @@
 package dz.utils;
 
 import dz.debugger.Location;
-import dz.gdb.ProcThread;
+import dz.gdb.*;
 import dz.layouts.DebuggerLayout;
 import dzaima.ui.eval.PNodeGroup;
 import dzaima.ui.gui.config.GConfig;
@@ -11,6 +11,7 @@ import dzaima.ui.node.types.StringNode;
 import dzaima.utils.Vec;
 
 import java.nio.file.Paths;
+import java.util.function.Function;
 
 public class LocationUtils {
   public static Node node(Ctx ctx, String prefix, Location l, Vec<ProcThread.Arg> args) {
@@ -59,4 +60,28 @@ public class LocationUtils {
     }
     return n;
   }
+  
+  
+  
+  public static Location readFrom(LocMode m, GdbFormat.GVal... vs) {
+    boolean m2 = m==LocMode.M2;
+    boolean m3 = m==LocMode.M3;
+    return new Location(
+      readFld(m2||m3?  "address"      :"addr", vs, GdbFormat.GVal::addr),
+      readFld(m3?"name":m2?"func-name":"func", vs, c -> c.str().equals("??")? null : c.str()),
+      readFld(m3?          "filename" :"file", vs, GdbFormat.GVal::str),
+      readFld("fullname",                      vs, GdbFormat.GVal::str),
+      readFld("line",                          vs, GdbFormat.GVal::asInt)
+    );
+  }
+  
+  static <T> T readFld(String k, GdbFormat.GVal[] vs, Function<GdbFormat.GVal, T> f) {
+    for (GdbFormat.GVal c : vs) {
+      GdbFormat.GVal r = c.get(k);
+      if (r!=null) return f.apply(r);
+    }
+    return null;
+  }
+  
+  public enum LocMode { M1, M2, M3 }
 }
