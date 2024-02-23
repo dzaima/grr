@@ -3,8 +3,8 @@ package dz.ui;
 import dz.debugger.Location;
 import dz.gdb.ProcThread;
 import dz.layouts.GdbLayout;
-import dz.tabs.StackTab;
 import dz.ui.SelectableEntry.CT;
+import dz.utils.LocationUtils;
 import dzaima.ui.gui.Popup;
 import dzaima.ui.node.Node;
 import dzaima.utils.*;
@@ -60,7 +60,7 @@ public abstract class SearchPopup extends Popup {
       waiting = false;
       list.clearCh();
       for (Pair<Location, Vec<ProcThread.Arg>> c : s) {
-        list.add(new SelectableEntry(StackTab.fnLine(node.ctx, "", c.a, c.b)) {
+        list.add(new SelectableEntry(LocationUtils.node(node.ctx, null, c.a, c.b)) {
           public void onClick(CT type) {
             if (type==CT.CLICK) accept(c.a, c.b);
           }

@@ -179,7 +179,7 @@ public class Executable {
       
       if (r==null || !r.startsWith("{")) {
         Log.warn("Failed to get symbols");
-        Arrays.fill(ls, new Location(null, null, null, null, null));
+        Arrays.fill(ls, Location.IDK);
         return;
       }
       

@@ -130,6 +130,24 @@ grr {
     valUndefined = #f88
   }
   
+  frame {
+    $prefix = text { id=prefix }
+    $addr = text { id=addr color=grr.stack.addrCol }
+    $fn = text { id=func color=grr.stack.fnNameCol }
+    $args = text { id=args color=grr.stack.unimportant }
+    $file = text { id=ifFile }
+    $base = text { family=grr.codeFamily $ch }
+    
+    all = grr.frame.$base { ch = {
+      grr.frame.$prefix{}
+      grr.frame.$addr{}
+      " in "
+      grr.frame.$fn{}
+      "(" grr.frame.$args{} ")"
+      grr.frame.$file{}
+    }}
+  }
+  
   stack {
     unimportant = str.colorDisabled
     argValCol = #dddd6c
@@ -138,16 +156,7 @@ grr {
     fnNameCol = grr.colors.symbolCol
     filePathCol = #188710
     
-    line = text { family=grr.codeFamily
-      text { id=prefix }
-      text { id=addr color=grr.stack.addrCol }
-      " in "
-      text { id=func color=grr.stack.fnNameCol }
-      "("
-      text { id=args color=grr.stack.unimportant }
-      ")"
-      text { id=ifFile }
-    }
+    
     argOnlyType = text {
       text { id=type }
     }
@@ -272,6 +281,11 @@ grr {
       ui = scroll {
         v { id=list }
       }
+      line = grr.frame.$base { ch = {
+        grr.frame.$fn{}
+        "(" grr.frame.$args{} ")"
+        grr.frame.$file{}
+      }}
     }
     
     timelineManager {

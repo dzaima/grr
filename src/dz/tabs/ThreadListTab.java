@@ -5,7 +5,7 @@ import dz.gdb.ProcThread;
 import dz.layouts.DebuggerLayout;
 import dz.ui.SelectableEntry;
 import dz.ui.SelectableEntry.CT;
-import dz.utils.DelayedRun;
+import dz.utils.*;
 import dzaima.ui.gui.io.*;
 import dzaima.ui.node.Node;
 import dzaima.ui.node.types.tabs.SerializableTab;
@@ -54,7 +54,7 @@ public class ThreadListTab extends GrrTab<DebuggerLayout> implements Serializabl
           }
           if (allNum) did = "#"+did;
           String name = DebuggerLayout.padL(did,' ',c1) + " " + DebuggerLayout.padL(thr.desc, ' ', c2);
-          ThreadItemNode n = new ThreadItemNode(StackTab.frameLine(ctx, name, thr.frame), this, thr, thr.tid);
+          ThreadItemNode n = new ThreadItemNode(LocationUtils.node(ctx, name, thr.frame), this, thr, thr.tid);
           list.add(n);
           if (thr.current) {
             curr = n;
@@ -82,7 +82,7 @@ public class ThreadListTab extends GrrTab<DebuggerLayout> implements Serializabl
             v.forEach((tid) -> {
               if (alreadyThere.contains(tid)) return;
               String msg = group==d.gid(tid)? "(not active) " : "(not in this process) ";
-              list.add(new ThreadItemNode(StackTab.frameLine(ctx, msg+tid, DebuggerLayout.BAD_STACKFRAME), this, null, tid));
+              list.add(new ThreadItemNode(LocationUtils.node(ctx, msg+tid, DebuggerLayout.BAD_STACKFRAME), this, null, tid));
             });
           });
         }

@@ -1,10 +1,10 @@
 package dz.tabs;
 
-import dz.debugger.RecordedState;
+import dz.debugger.*;
 import dz.gdb.ProcThread;
 import dz.layouts.DebuggerLayout;
 import dz.ui.SelectableEntry;
-import dz.utils.Promise;
+import dz.utils.*;
 import dzaima.ui.gui.io.Click;
 import dzaima.ui.node.Node;
 import dzaima.ui.node.types.*;
@@ -49,8 +49,8 @@ public class PastTab extends GrrTab<DebuggerLayout> implements SerializableTab {
     String time = Time.localNearTimeStr(st.visitTime);
     if (st._elapsedTime!=null && st._elapsedTime.isResolved()) time = time+" "+DebuggerLayout.fmtNanos(st._elapsedTime.get());
     
-    if (f!=null) return StackTab.frameLine(ctx, time, f);
-    else return new StringNode(ctx, time);
+    if (f!=null) return LocationUtils.node(ctx, time, f);
+    else return LocationUtils.node("grr.frame.all", ctx, time, Location.IDK, null);
   }
   public static class Entry extends SelectableEntry {
     public final PastTab tab;

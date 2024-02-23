@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class Location {
+  public static final Location IDK = new Location(null, null, null, null, null);
   public final Long addr;
   public final String sym;
   public final String shortFile, fullFile;

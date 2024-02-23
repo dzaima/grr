@@ -1,8 +1,10 @@
 package dz.tabs;
 
+import dz.debugger.Location;
 import dz.general.DisasFn;
 import dz.layouts.*;
 import dz.ui.SelectableEntry;
+import dz.utils.LocationUtils;
 import dzaima.ui.node.Node;
 import dzaima.ui.node.types.tabs.SerializableTab;
 
@@ -22,7 +24,8 @@ public class SourceMapStackTab extends GrrTab<GdbLayout> implements Serializable
   public void stack(DisasFn.SourceMap map, String bin) {
     list.clearCh();
     for (DisasFn.SourceMap c : DisasFn.SourceMap.unroll(map)) {
-      list.add(new SrcEntryNode(StackTab.fnLine(ctx, "", DisasFn.SourceMap.loc(0, c)), this, c, bin));
+      Location l = DisasFn.SourceMap.loc(0, c);
+      list.add(new SrcEntryNode(LocationUtils.node("grr.tabs.srcStack.line", ctx, null, l, null), this, c, bin));
     }
   }
   
