@@ -46,27 +46,38 @@ public class JavaPrintAssembly {
       id = ID_PRE + idCtr++;
     }
     
+    public long size() { return addrE-addrS; }
+    
     public DisasFn.SourceMap findSource(long addr) {
       int i = maps.binarySearch(c -> c.a >= addr);
       return i<maps.sz? maps.get(i).b : null;
     }
+  }
+  
+  public void writeElf(Path p) {
+    ElfWriter w = new ElfWriter(64, Elf.ET_DYN, Elf.A_AMD64);
     
-    public void writeElf(Path p) {
-      ElfWriter w = new ElfWriter(64, Elf.ET_DYN, Elf.A_AMD64);
+    ElfWriter.ElfSyms tab = w.symtab();
+    int[] i = new int[1];
+    for (JSym c : syms) {
       ElfWriter.Data d = new ElfWriter.Data() {
-        public void writeTo(Elf.Writer w) { w.w(code); }
+        public void writeTo(Elf.Writer w) { w.w(c.code); }
       };
-      w.addProg(Elf.PT_LOAD, Elf.PF_R|Elf.PF_W|Elf.PF_X, addrS, d);
-      w.addSec(new ElfWriter.Section() {
+      w.addProg(Elf.PT_LOAD, Elf.PF_R|Elf.PF_W|Elf.PF_X, c.addrS, d);
+      int sec = w.addSec(new ElfWriter.Section() {
         protected int type() { return Elf.SHT_PROGBITS; }
-        public String name() { return ".text"; }
-        protected long addr() { return addrS; }
+        public String name() { return ".text."+(i[0]++); }
+        protected long addr() { return c.addrS; }
         public ElfWriter.Data getData() { return d; }
         protected int flags() { return Elf.SHF_ALLOC | Elf.SHF_EXECINSTR; }
       });
-      try { Files.write(p, w.finish()); }
-      catch (IOException e) { Log.stacktrace("JSym::writeElf", e); }
+      
+      tab.addSymbol(c.addrS, c.size(), Elf.STT_FUNC, c.name, sec);
     }
+    
+    
+    try { Files.write(p, w.finish()); }
+    catch (IOException e) { Log.stacktrace("JSym::writeElf", e); }
   }
   
   public static JavaPrintAssembly load(Path p) {

@@ -50,24 +50,21 @@ public class PerfLayout extends GdbLayout {
   
   public Executable currFile;
   private final HashSet<String> loadedMaps = new HashSet<>();
-  private final HashMap<JavaPrintAssembly.JSym, Path> jsymPaths = new HashMap<>();
+  private Path javaJITElf;
   public void getDisas(Binary bin, Location l, Consumer<DisasFn> res) {
     if (bin.file==null || (l.addr==null && l.sym==null)) { res.accept(null); return; }
     
     if (bin.file.startsWith(JavaPrintAssembly.ID_PRE) && javaMach!=null) {
       JavaPrintAssembly.JSym sym = javaMach.findByID(bin.file);
       
-      Path tmp = jsymPaths.get(sym);
-      if (tmp==null) {
-        try { tmp = Files.createTempFile("grrtmp_", ".elf"); }
+      if (javaJITElf==null) {
+        try { javaJITElf = Files.createTempFile("grrtmp_", ".elf"); }
         catch (IOException e) { res.accept(null); return; }
-        jsymPaths.put(sym, tmp);
-        Main.filesToRemoveOnClose.add(tmp);
+        Main.filesToRemoveOnClose.add(javaJITElf);
+        javaMach.writeElf(javaJITElf);
       }
       
-      sym.writeElf(tmp);
-      
-      currFile = d.makeExe(tmp);
+      currFile = d.makeExe(javaJITElf);
       d.toExe(currFile, b -> {
         if (b) currFile.disasSegment(sym.addrS, sym.addrE, Executable.DisasMode.OPS, r -> {
           res.accept(injectCustomSource(new DisasFn(sym.addrS, sym.addrE, sym.name, false, FnCache.insns(r))));

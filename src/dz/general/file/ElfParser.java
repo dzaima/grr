@@ -104,7 +104,7 @@ public class ElfParser extends ByteReader {
         setPos(strs.fileOff+nameOff);
         String nameStr = str();
         setPos(p0);
-        r.add(new Symbol(value, size, nameStr, shndx, info));
+        r.add(new Symbol(value, size, info, nameStr, shndx));
       }
       return r;
     } catch (Throwable t) {
@@ -244,7 +244,7 @@ public class ElfParser extends ByteReader {
     public final String name;
     public final int sec, info;
     
-    public Symbol(long addr, long size, String name, int sec, int info) {
+    public Symbol(long addr, long size, int info, String name, int sec) {
       this.addr = addr;
       this.size = size;
       this.name = name;

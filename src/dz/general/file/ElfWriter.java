@@ -32,8 +32,9 @@ public class ElfWriter {
       protected Data getData() { return data; }
     });
   }
-  public void addSec(Section s) {
+  public int addSec(Section s) {
     sections.add(s);
+    return sections.sz-1;
   }
   
   public byte[] finish() {
@@ -125,20 +126,35 @@ public class ElfWriter {
       Data data = c.getData();
       r.wS(data==null? 0 : data.knownOff());
       r.wS(c.size(data==null? 0 : data.knownSize()));
-      r.w4(0); // sh_link
+      int link = 0;
+      Section ls = c.link();
+      if (ls!=null) {
+        link = sections.indexOf(ls);
+        assert link!=-1;
+      }
+      r.w4(link); // sh_link
       r.w4(0); // sh_info
       r.wS(0); // alignment
-      r.wS(0); // sh_entsize
+      r.wS(c.entsize(bits)); // sh_entsize
     }
     
     return r.get();
   }
   
+  public ElfSyms symtab() {
+    ElfWriter.ElfSyms syms = new ElfWriter.ElfSyms() {
+      public String symTabName() { return ".symtab"; }
+      public String strTabName() { return ".strtab"; }
+    };
+    onDone.add(() -> sections.addAll(syms.finish()));
+    return syms;
+  }
+  
   
   public abstract static class ElfSyms {
     Vec<ElfParser.Symbol> syms = new Vec<>();
-    public void addSymbol(long s, long size, String name, int info, int sec) {
-      syms.add(new ElfParser.Symbol(s, size, name, sec, info));
+    public void addSymbol(long s, long size, int info, String name, int sec) {
+      syms.add(new ElfParser.Symbol(s, size, info, name, sec));
     }
     
     public abstract String symTabName();
@@ -147,39 +163,41 @@ public class ElfWriter {
       Strtab tab = Elf.strtab(syms.map(c -> c.name));
       
       Data strData = new Data() { public void writeTo(Writer w) { w.w(tab.data()); } };
-      
-      return Vec.of(
-        new Section() {
-          protected int type() { return Elf.SHT_SYMTAB; }
-          public String name() { return symTabName(); }
-          protected long addr() { return 0; }
-          public Data getData() {
-            return new Data() {
-              public void writeTo(Writer w) {
-                for (int i = 0; i < syms.sz; i++) {
-                  ElfParser.Symbol s = syms.get(i);
-                  if (w.bits==64) {
-                    w.w4(tab.offs[i]);
-                    w.w1(s.info);
-                    w.w1(0); // other
-                    w.w2(s.sec);
-                    w.wS(s.addr);
-                    w.wS(s.size);
-                  } else {
-                    throw new RuntimeException("todo 32-bit");
-                  }
-                }
-              }
-            };
+      Data symData = new Data() {
+        public void writeTo(Writer w) {
+          for (int i = 0; i < syms.sz; i++) {
+            ElfParser.Symbol s = syms.get(i);
+            if (w.bits==64) {
+              w.w4(tab.offs[i]);
+              w.w1(s.info);
+              w.w1(0); // other
+              w.w2(s.sec);
+              w.wS(s.addr);
+              w.wS(s.size);
+            } else {
+              throw new RuntimeException("todo 32-bit");
+            }
           }
-        },
-        new Section() {
-          protected int type() { return Elf.SHT_STRTAB; }
-          public String name() { return strTabName(); }
-          protected long addr() { return 0; }
-          public Data getData() { return strData; }
         }
-      );
+      };
+      
+      Section strSec = new Section() {
+        protected int type() { return Elf.SHT_STRTAB; }
+        public String name() { return strTabName(); }
+        protected long addr() { return 0; }
+        public Data getData() { return strData; }
+      };
+      
+      Section symSec = new Section() {
+        protected int type() { return Elf.SHT_SYMTAB; }
+        public String name() { return symTabName(); }
+        protected long addr() { return 0; }
+        public Data getData() { return symData; }
+        protected Section link() { return strSec; }
+        public long entsize(int bits) { return bits==64? 24 : 16; }
+      };
+      
+      return Vec.of(strSec, symSec);
     }
   }
   
@@ -201,8 +219,10 @@ public class ElfWriter {
     public abstract Data getData();
     protected abstract int type();
     protected abstract long addr();
+    protected Section link() { return null; }
     protected int flags() { return 0; }
     protected long size(long len) { return len; }
+    public long entsize(int bits) { return 0; }
   }
   public abstract static class Program {
     protected abstract int type();
