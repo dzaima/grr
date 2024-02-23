@@ -234,7 +234,8 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
       }
       
       locCache.computeIfAbsent(e0.ins, i -> Promise.create(r -> {
-        g.d.curr.sourceInfo(i.s, i.e(), v -> {
+        if (g.d.curr==null) r.set(null);
+        else g.d.curr.sourceInfo(i.s, i.e(), v -> {
           locCache.remove(i);
           if (v==null) e0.ins.map = SourceMap.NONE;
           else e0.ins.map = new SourceMap(null, v.shortFile, v.fullFile, fn==null? null : fn.name, v.line==null? -1 : v.line, -1);
