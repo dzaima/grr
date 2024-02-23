@@ -70,13 +70,8 @@ public class PastTab extends GrrTab<DebuggerLayout> implements SerializableTab {
       if (lwcp!=-1) tab.g.d.curr.gotoLWCP(lwcp, null);
     }
     
-    public void mouseUp(int x, int y, Click c) {
-      super.mouseUp(x, y, c);
-      if (gc.isDoubleclick(c) && tab.g.atPausedMainState()) toThis();
-    }
-    
-    public void onClick(CT type) {
-      
+    public void onSelect(CT type) {
+      if (type.click2) toThis();
     }
   }
 }

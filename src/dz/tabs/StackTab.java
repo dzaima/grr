@@ -73,7 +73,7 @@ public class StackTab extends GrrTab<DebuggerLayout> implements SerializableTab 
       this.f = f;
     }
     
-    public void onClick(CT type) {
+    public void onSelect(CT type) {
       if (tab.g.d.status().paused()) tab.g.selectFrame(f);
     }
   }

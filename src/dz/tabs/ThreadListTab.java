@@ -103,8 +103,8 @@ public class ThreadListTab extends GrrTab<DebuggerLayout> implements Serializabl
       this.tid = tid;
     }
     
-    public void onClick(CT type) {
-      if (type!=CT.QUIET && tab.g.d.status().paused()) {
+    public void onSelect(CT type) {
+      if (type.sel1 && tab.g.d.status().paused()) {
         if (thr!=null) tab.g.selectThread(thr.obj);
         else if (tab.g.d.isRR()) tab.g.forTabs(TimelineTab.class, t -> t.showThreadByID(tid));
       }

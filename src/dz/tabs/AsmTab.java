@@ -82,7 +82,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
         AsmListNode.AsmEntry e = (AsmListNode.AsmEntry) asmList.ch.get(idx);
         e.select(SelectableEntry.CT.QUIET);
         asmList.activeEntry = e;
-        if (stat!=null) e.onClick(SelectableEntry.CT.CLICK);
+        if (stat!=null) e.onSelect(SelectableEntry.CT.CLICK);
       }
     };
     

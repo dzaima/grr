@@ -62,11 +62,8 @@ public class CheckpointTab extends GrrTab<DebuggerLayout> implements Serializabl
       this.st = st;
     }
     
-    public void onClick(CT type) { }
-    
-    public void mouseUp(int x, int y, Click c) {
-      super.mouseUp(x, y, c);
-      if (gc.isDoubleclick(c) && tab.g.atPausedMainState()) tab.g.d.curr.toCheckpoint(num, null);
+    public void onSelect(CT type) {
+      if (type.click2) tab.g.d.curr.toCheckpoint(num, null);
     }
     
     public boolean keyF(Key key, int scancode, KeyAction a) {
@@ -75,7 +72,7 @@ public class CheckpointTab extends GrrTab<DebuggerLayout> implements Serializabl
           tab.remove(this);
           return true;
         case "click":
-          select(CT.CLICK);
+          select(CT.ENTER);
           return true;
       }
       return super.keyF(key, scancode, a);

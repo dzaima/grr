@@ -148,7 +148,7 @@ public class BreakpointsTab extends GrrTab<DebuggerLayout> implements Serializab
       this.b = b;
     }
     
-    public void onClick(CT type) { }
+    public void onSelect(CT type) { }
     
     public boolean keyF(Key key, int scancode, KeyAction a) {
       DebuggerLayout g = tab.g;

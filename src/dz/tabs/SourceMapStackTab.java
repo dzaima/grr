@@ -41,8 +41,8 @@ public class SourceMapStackTab extends GrrTab<GdbLayout> implements Serializable
       this.bin = bin;
     }
     
-    public void onClick(CT type) {
-      tab.g.selectSourceMap(map, bin);
+    public void onSelect(CT type) {
+      if (type.sel1) tab.g.selectSourceMap(map, bin);
     }
   }
 }

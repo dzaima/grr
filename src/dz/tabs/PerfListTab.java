@@ -83,7 +83,8 @@ public class PerfListTab extends GrrTab<GdbLayout> implements SerializableTab {
       this.stat = stat;
     }
     
-    public void onClick(CT type) {
+    public void onSelect(CT type) {
+      if (!type.sel1) return;
       for (GrrTab<?> t : t.g.tabs) t.onSelectedStatSymbol(new Location(stat.sym.addr==-1? null : stat.sym.addr, stat.sym.name, null, null, null), stat);
     }
   }

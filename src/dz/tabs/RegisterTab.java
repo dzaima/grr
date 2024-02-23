@@ -128,7 +128,7 @@ public class RegisterTab extends GrrTab<DebuggerLayout> implements SerializableT
       this.toCopy = toCopy;
     }
     
-    public void onClick(CT type) { }
+    public void onSelect(CT type) { }
     
     public boolean keyF(Key key, int scancode, KeyAction a) {
       switch (gc.keymap(key, a, "grr.entry")) {

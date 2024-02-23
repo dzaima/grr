@@ -61,8 +61,8 @@ public abstract class SearchPopup extends Popup {
       list.clearCh();
       for (Pair<Location, Vec<ProcThread.Arg>> c : s) {
         list.add(new SelectableEntry(LocationUtils.node(node.ctx, null, c.a, c.b)) {
-          public void onClick(CT type) {
-            if (type==CT.CLICK) accept(c.a, c.b);
+          public void onSelect(CT type) {
+            if (type.click1) accept(c.a, c.b);
           }
           public int bgColCalc() {
             if (sel) return gc.getProp("grr.list.bgSelFocus").col();

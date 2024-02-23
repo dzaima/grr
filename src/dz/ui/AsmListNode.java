@@ -336,8 +336,8 @@ public abstract class AsmListNode extends Node implements SelectableListManager.
     public void hoverS() { entryHoverS(this); }
     public void hoverE() { entryHoverE(this); }
     
-    public void onClick(CT type) {
-      if (type!=CT.QUIET) entryClicked(this);
+    public void onSelect(CT type) {
+      if (type.sel1) entryClicked(this);
       
       selected = ins;
       if (ins.target!=null) {
