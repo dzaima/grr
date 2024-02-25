@@ -1,7 +1,6 @@
 package dz.stat;
 
 import dz.general.DisasFn;
-import dz.ui.AsmListNode;
 import dzaima.utils.*;
 
 public abstract class StatSymbol { // relates via BasicSymbol, but can come from a specific one if desired
@@ -22,5 +21,5 @@ public abstract class StatSymbol { // relates via BasicSymbol, but can come from
   public abstract void onAllSelected();
   
   public DisasFn disas() { return null; }
-  public AsmListNode.AsmConfig forceCfg() { return null; }
+  public DisasFn forceDisas() { return null; } // if not null, then has at least one instruction info
 }

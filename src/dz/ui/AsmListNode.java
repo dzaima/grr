@@ -104,7 +104,7 @@ public abstract class AsmListNode extends Node implements SelectableListManager.
   public enum AddrDisp { NONE, KNOWN, ALL }
   public enum AddrFmt { ADDR, DEC_OFF, HEX_OFF }
   public AsmConfig cfg = AsmListNode.DEF_CONFIG;
-  public AsmConfig asmConfig() { return stat!=null && stat.forceCfg()!=null? stat.forceCfg() : cfg; }
+  public AsmConfig asmConfig() { return fn!=null && fn.forceCfg!=null? fn.forceCfg : cfg; }
   
   public static final class AsmConfig {
     public final AddrDisp disp;

@@ -63,10 +63,13 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
   public void onSelectedFrame(Location l, boolean justFunction, StatSymbol stat0, boolean immediateSource) {
     Consumer<DisasFn> onFn = fn -> {
       if (fn==null || fn.ins==null || fn.ins.length==0) {
-        asmList.setFn(null, null);
-        overlay.setFn(null, null);
-        g.selectSourceMapStack(null, stat0==null? null : stat0.sym.bin.file);
-        return;
+        fn = stat0==null? null : stat0.forceDisas();
+        if (fn==null) {
+          asmList.setFn(null, null);
+          overlay.setFn(null, null);
+          g.selectSourceMapStack(null, stat0==null? null : stat0.sym.bin.file);
+          return;
+        }
       }
       
       StatSymbol stat = stat0;

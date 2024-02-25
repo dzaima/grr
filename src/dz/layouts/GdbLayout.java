@@ -194,10 +194,11 @@ public abstract class GdbLayout extends Layout {
         int o2 = l.indexOf(' ', o1+1);
         long len = GdbFormat.parseHex(l.substring(o1+1, o2));
         String name = l.substring(o2+1);
-        res.add(cache.addJITRange(pid, start, start+len, "pid "+pid+": "+name));
+        if (len!=0) res.add(cache.addJITRange(pid, start, start+len, "pid "+pid+": "+name));
       }
       return res;
     } catch (Throwable t) {
+      Log.stacktrace("perf map read", t);
       System.err.println("Failed to read JIT map");
       return Vec.of();
     }

@@ -2,6 +2,7 @@ package dz.general;
 
 import dz.debugger.Location;
 import dz.general.arch.Arch;
+import dz.ui.AsmListNode.AsmConfig;
 import dz.utils.AddrMapper;
 import dzaima.utils.Vec;
 
@@ -13,13 +14,15 @@ public class DisasFn implements Comparable<DisasFn>, AddrMapper.Range {
   public final boolean mutable; // TODO this is wrong: "if true, ins may not be present, or should be re-read after any program execution"
   boolean jumpsRead;
   public final ParsedIns[] ins;
+  public final AsmConfig forceCfg;
   
-  public DisasFn(long s, long e, String name, boolean mutable, ParsedIns[] ins) {
+  public DisasFn(long s, long e, String name, boolean mutable, ParsedIns[] ins, AsmConfig forceCfg) {
     this.s = s;
     this.e = e;
     this.name = name;
     this.mutable = mutable;
     this.ins = ins;
+    this.forceCfg = forceCfg;
   }
   
   public void readJumps(Arch a) {

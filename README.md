@@ -119,6 +119,9 @@ perf record java -XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -XX:Comp
 #   -XX:CompileCommand=print,my.package.Foo::* -XX:CompileCommand=print,jdk.incubator.vector.*::*
 # -XX:+DebugNonSafepoints is implicit for PrintAssembly, but not for CompileCommand (it might help with additional source mapping)
 
+# Alternatively or additionally, this can be used to get JIT symbols without disassembly (can improve results even when combined with PrintAssembly):
+#   -XX:+DumpPerfMapAtExit
+
 grr --perf . --jvm-out java-output --move /java-src/my/package:/path/to/my/package
 # the --move remaps my.package.Foo to /path/to/my/package/Foo.java (/java-src/ is a hard-coded prefix to differentiate from other paths)
 ```

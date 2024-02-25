@@ -44,23 +44,19 @@ public class PerfStatSymbol extends StatSymbol {
     }
   }
   
-  public DisasFn disas() {
-    if (sym.name==null && !stat.isEmpty()) {
-      Vec<Long> es = Vec.ofCollection(stat.keySet());
-      es.sort();
-      DisasFn.ParsedIns[] is = new DisasFn.ParsedIns[es.sz];
-      for (int i = 0; i < es.sz; i++) {
-        long a0 = es.get(i);
-        is[i] = new DisasFn.ParsedIns(a0, new byte[0], i==es.sz-1? "" : "# "+(es.get(i+1)-a0)+" bytes until next");
-      }
-      return new DisasFn(0, -1, name, false, is);
+  public static AsmListNode.AsmConfig ADDR_CFG = new AsmListNode.AsmConfig(AsmListNode.AddrDisp.ALL, AsmListNode.AddrFmt.ADDR, false, 0);
+  public DisasFn forceDisas() {
+    Vec<Long> es = Vec.ofCollection(stat.keySet());
+    es.sort();
+    DisasFn.ParsedIns[] is = new DisasFn.ParsedIns[es.sz];
+    for (int i = 0; i < es.sz; i++) {
+      long a0 = es.get(i);
+      is[i] = new DisasFn.ParsedIns(a0, new byte[0], i==es.sz-1? "" : "# "+(es.get(i+1)-a0)+" bytes until next");
     }
-    return null;
+    return new DisasFn(0, -1, name, false, is, ADDR_CFG);
   }
-  public static AsmListNode.AsmConfig cfg = new AsmListNode.AsmConfig(AsmListNode.AddrDisp.ALL, AsmListNode.AddrFmt.ADDR, false, 0);
-  public AsmListNode.AsmConfig forceCfg() {
-    if (sym.name==null && !stat.isEmpty()) return cfg;
-    return null;
+  public DisasFn disas() {
+    return sym.name==null && !stat.isEmpty()? forceDisas() : null;
   }
   
   public void onAllSelected() {
