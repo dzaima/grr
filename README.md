@@ -121,6 +121,7 @@ perf record java -XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -XX:Comp
 
 # Alternatively or additionally, this can be used to get JIT symbols without disassembly (can improve results even when combined with PrintAssembly):
 #   -XX:+DumpPerfMapAtExit
+# if using just this, storing java output and --jvm-out is unnecessary - just --perf is needed
 
 grr --perf . --jvm-out java-output --move /java-src/my/package:/path/to/my/package
 # the --move remaps my.package.Foo to /path/to/my/package/Foo.java (/java-src/ is a hard-coded prefix to differentiate from other paths)
