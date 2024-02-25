@@ -268,7 +268,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
         StatInstr c = ((AsmEntry) ch.get(i)).getStat();
         if (c!=null) instrs.add(c);
       }
-      stat.onSelection(instrs);
+      if (stat!=null) stat.onSelection(instrs);
     }
     
     protected void entryMenu(AsmEntry e, PartialMenu m) {
