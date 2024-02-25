@@ -16,7 +16,7 @@ public class JavaMangling {
     }
   }
   public static String demanglePath(String name) {
-    return name.replace('/', '.').replaceAll("\\+0x[0-9a-f]+", "");
+    return name.replace('/', '.').replaceAll("[+.]0x[0-9a-f]+", "");
   }
   
   

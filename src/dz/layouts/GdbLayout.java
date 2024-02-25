@@ -314,7 +314,7 @@ public abstract class GdbLayout extends Layout {
       if (exe!=null) {
         mappings.add(new StatGlobal.Mapping(new Binary(exe, exe, false), 0, Long.MAX_VALUE, 0));
       }
-      if (javaMach !=null) {
+      if (javaMach!=null) {
         for (JavaPrintAssembly.JSym c : javaMach.syms) {
           mappings.add(new StatGlobal.Mapping(Binary.virtSym(c.id, c.name), c.addrS, c.addrE, 0));
         }

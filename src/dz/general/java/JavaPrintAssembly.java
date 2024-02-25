@@ -103,8 +103,17 @@ public class JavaPrintAssembly {
             bs = new ByteVec();
           } else if (l.equals("[MachCode]")) mode = 2;
           else if (l.startsWith("Compiled method (")) {
-            int i = l.indexOf(')', 17);
-            if (i!=-1) comp = l.substring(17, i);
+            String[] ps = Tools.split(l.substring(17), ' ');
+            if (ps.length>1) {
+              if (ps[0].length() > 0) comp = ps[0].substring(0, ps[0].length()-1);
+              
+              for (int i = 1; i < ps.length; i++) {
+                if (ps[i].length()<=2) continue;
+                if (ps[i].charAt(0)>='0' && ps[i].charAt(0)<='9') continue;
+                name = JavaMangling.demanglePath(ps[i]);
+                break;
+              }
+            }
           }
           continue;
         }
