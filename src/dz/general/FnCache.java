@@ -26,7 +26,7 @@ public class FnCache { // TODO actually cache
     } else if (f.e-f.s < 100000) {
       d.curr.disasSegment(f.s, f.e, Executable.DisasMode.OPS, ins -> {
         if (ins==null) got.accept(f);
-        else got.accept(new DisasFn(f.s, f.e, f.name, false, insns(ins), null));
+        else got.accept(new DisasFn(f.s, f.e, f.name, insns(ins), true, null));
       });
     }
   }
@@ -49,13 +49,13 @@ public class FnCache { // TODO actually cache
       if (proper==Executable.Properness.NONE) {
         got.accept(null);
       } else {
-        got.accept(new DisasFn(s, e, name, false, insns(ins), null));
+        got.accept(new DisasFn(s, e, name, insns(ins), proper==Executable.Properness.DYN, null));
       }
     });
   }
   
   public DisasFn addJITRange(long pid, long s, long e, String name) {
-    DisasFn fn = new DisasFn(s, e, name, false, null, null);
+    DisasFn fn = new DisasFn(s, e, name, null, true, null);
     // TODO when GdbLayout.getDisas doesn't use -1, enable the below
     // if (pid==-1) jitMapGlobal.addFullRange(fn);
     // else jitMaps.computeIfAbsent(pid, l->new OverlapMapper<>()).addFullRange(fn);

@@ -287,9 +287,9 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
         DebuggerLayout gd = (DebuggerLayout) g;
         m.add(gc.getProp("grr.tabs.asm.menu.run").gr(), (s) -> {
           switch (s) {
-            case "break": gd.addBreakpoint(fn.mutable, false, true, ins, null); return true;
-            case "contF": if (gd.readyForExec()) { gd.addBreakpoint(fn.mutable, true, true, ins, null); gd.d.curr.cont(false, null); } return true;
-            case "contB": if (gd.readyForExec()) { gd.addBreakpoint(fn.mutable, true, true, ins, null); gd.d.curr.cont(true,  null); } return true;
+            case "break": gd.addBreakpoint(fn.jit, false, true, ins, null); return true;
+            case "contF": if (gd.readyForExec()) { gd.addBreakpoint(fn.jit, true, true, ins, null); gd.d.curr.cont(false, null); } return true;
+            case "contB": if (gd.readyForExec()) { gd.addBreakpoint(fn.jit, true, true, ins, null); gd.d.curr.cont(true,  null); } return true;
           }
           return false;
         });

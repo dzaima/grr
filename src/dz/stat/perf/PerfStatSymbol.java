@@ -53,7 +53,7 @@ public class PerfStatSymbol extends StatSymbol {
       long a0 = es.get(i);
       is[i] = new DisasFn.ParsedIns(a0, new byte[0], i==es.sz-1? "" : "# "+(es.get(i+1)-a0)+" bytes until next");
     }
-    return new DisasFn(0, -1, name, false, is, ADDR_CFG);
+    return new DisasFn(0, -1, name, is, true, ADDR_CFG);
   }
   public DisasFn disas() {
     return sym.name==null && !stat.isEmpty()? forceDisas() : null;

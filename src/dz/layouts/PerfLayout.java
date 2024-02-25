@@ -67,7 +67,7 @@ public class PerfLayout extends GdbLayout {
       currFile = d.makeExe(javaJITElf);
       d.toExe(currFile, b -> {
         if (b) currFile.disasSegment(sym.addrS, sym.addrE, Executable.DisasMode.OPS, r -> {
-          res.accept(injectCustomSource(new DisasFn(sym.addrS, sym.addrE, sym.name, false, FnCache.insns(r), null)));
+          res.accept(injectCustomSource(new DisasFn(sym.addrS, sym.addrE, sym.name, FnCache.insns(r), false, null)));
         });
       });
       return;

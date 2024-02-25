@@ -11,16 +11,16 @@ import java.util.HashMap;
 public class DisasFn implements Comparable<DisasFn>, AddrMapper.Range {
   public final long s, e;
   public final String name;
-  public final boolean mutable; // TODO this is wrong: "if true, ins may not be present, or should be re-read after any program execution"
+  public final boolean jit;
   boolean jumpsRead;
   public final ParsedIns[] ins;
   public final AsmConfig forceCfg;
   
-  public DisasFn(long s, long e, String name, boolean mutable, ParsedIns[] ins, AsmConfig forceCfg) {
+  public DisasFn(long s, long e, String name, ParsedIns[] ins, boolean jit, AsmConfig forceCfg) {
     this.s = s;
     this.e = e;
     this.name = name;
-    this.mutable = mutable;
+    this.jit = jit;
     this.ins = ins;
     this.forceCfg = forceCfg;
   }
