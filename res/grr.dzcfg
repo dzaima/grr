@@ -114,8 +114,8 @@ grr {
     keys {
       up = { "up" }
       down = { "down" }
-      first = { "home" }
-      last = { "end" }
+      first = scroll.keys.toXYs
+      last = scroll.keys.toYe
       click = { "enter" }
       copy = { "ctrl+c" }
       sum = { "ctrl+s" }
