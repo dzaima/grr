@@ -39,7 +39,9 @@ public class PerfStatSymbol extends StatSymbol {
       if (DEBUG_NAMES) {
         name = (sym.name==null? "" : sym.name+" ")+"("+Tools.hexLong(minAddr)+"…"+Tools.hexLong(maxAddr)+" - "+(maxAddr-minAddr)+"B)";
       } else {
-        name = "("+stat.size()+" addresses in a "+Math.abs(maxAddr-minAddr)+"-byte span)";
+        String d = sym.bin.desc;
+        if (d.equals("//unknown")) d = "JIT";
+        name = d+": "+stat.size()+" addresses in a "+Math.abs(maxAddr-minAddr)+"-byte span";
       }
     }
   }
@@ -47,7 +49,7 @@ public class PerfStatSymbol extends StatSymbol {
   public static AsmListNode.AsmConfig ADDR_CFG = new AsmListNode.AsmConfig(AsmListNode.AddrDisp.ALL, AsmListNode.AddrFmt.ADDR, false, 0);
   public DisasFn forceDisas() {
     Vec<Long> es = Vec.ofCollection(stat.keySet());
-    es.sort();
+    es.sort(Long::compareUnsigned);
     DisasFn.ParsedIns[] is = new DisasFn.ParsedIns[es.sz];
     for (int i = 0; i < es.sz; i++) {
       long a0 = es.get(i);

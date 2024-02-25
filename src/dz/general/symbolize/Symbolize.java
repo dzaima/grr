@@ -18,7 +18,7 @@ public class Symbolize {
   public static class Resolved {
     public final long sym_static, sym_dyn;
     public final @Nullable String sym;
-    public Resolved(long sym_static, long symDyn, @NotNull String sym) {
+    public Resolved(long sym_static, long symDyn, @Nullable String sym) {
       this.sym_static = sym_static;
       sym_dyn = symDyn;
       this.sym = sym;
