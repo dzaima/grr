@@ -33,7 +33,7 @@ public class LiveTextFieldNode extends TextFieldNode {
       case "up": case "down":
         if (associatedList==null) break;
         Pair<Node,Boolean> list = associatedList.get();
-        if (list==null || list.a==null) break;
+        if (list==null || list.a==null || list.a.ch.sz==0) break;
         SelectableEntry e = (SelectableEntry) list.a.ch.get(0);
         e.select(SelectableEntry.CT.MOVE);
         if (list.b) e.keyF(key, 0, a);
