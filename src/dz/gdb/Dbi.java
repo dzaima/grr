@@ -170,7 +170,7 @@ public class Dbi {
         if (desc==null) desc = "";
         
         GVal fo = c.get("frame");
-        StackFrame f = readFrame(fo, -1);
+        StackFrame f = readFrame(fo, -1, null);
         if (fo.has("args")) addArgs(f, fo.get("args"));
         boolean isCurr = gdbID.equals(currID);
         return new ThreadState(isCurr? t0 : new ProcThread(curr, gdbID), f, desc, gdbID, globalID, tid, isCurr);
@@ -183,9 +183,11 @@ public class Dbi {
     p.cmd("-thread-select", thr.gdbID).run(r -> after.accept(r.type.ok()));
   }
   
-  private StackFrame readFrame(GVal c, long topAddr) {
+  private StackFrame readFrame(GVal c, long topAddr, StackFrame higherFrame) {
     Location l = LocationUtils.readFrom(LocationUtils.LocMode.M1, c);
-    return new StackFrame(c.getInt("level"), l, topAddr==-1 || Objects.equals(l.addr, topAddr));
+    boolean afterCall = topAddr!=-1 && !Objects.equals(l.addr, topAddr);
+    if (higherFrame!=null && "<signal handler called>".equals(higherFrame.l.sym)) afterCall = false;
+    return new StackFrame(c.getInt("level"), l, afterCall);
   }
   
   public void _stacktrace(ProcThread t, boolean args, int start, int end, Consumer<Vec<StackFrame>> got) {
@@ -202,7 +204,7 @@ public class Dbi {
       long topAddr = -1;
       int i = 0;
       for (GVal c : r1.v.get("stack").vs()) {
-        StackFrame f = readFrame(c, topAddr);
+        StackFrame f = readFrame(c, topAddr, res.peek());
         if (i==0) topAddr = f.l.addr;
         res.add(f);
         i++;

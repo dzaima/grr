@@ -48,7 +48,7 @@ public abstract class GrrTab<T extends Layout> extends Tab {
   
   // sequence of things up to source mapping
   public /*open*/ void onSelectedThread(ProcThread t) { }
-  public /*open*/ void onSelectedFunction(Location l, boolean justFunction, boolean nonTop) { } // incl. selectFrame; doesn't imply onSelectedSourceMap
+  public /*open*/ void onSelectedFunction(Location l, boolean justFunction, boolean afterCall) { } // incl. selectFrame; doesn't imply onSelectedSourceMap
   public /*open*/ void onSelectedSourceMapStack(DisasFn.SourceMap map, String bin) { }
   public /*open*/ void onSelectedSourceMap(DisasFn.SourceMap map, String bin) { }
   

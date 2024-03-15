@@ -158,7 +158,7 @@ public abstract class GdbLayout extends Layout {
     fGdb = null; // to allow reselecting if it was changed in gdb
     for (GrrTab<?> t : tabs) {
       if (f==null) t.onSelectedFunction(null, false, false);
-      else t.onSelectedFunction(f.l, false, f.nonTop);
+      else t.onSelectedFunction(f.l, false, f.afterCall);
     }
   }
   public void selectThread(ProcThread thr) {

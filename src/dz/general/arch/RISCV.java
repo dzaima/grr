@@ -51,6 +51,7 @@ public class RISCV extends GenericArch {
       baseReg.put("fa"+i, "f"+(i+10));
     }
     for (int i = 8; i <= 11; i++) baseReg.put("ft"+i, "f"+(i+20));
+    baseReg.put("v0.t", "v0");
   }
   
   public Lang getLang(GConfig gc) {

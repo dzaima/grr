@@ -28,8 +28,8 @@ public class Location {
     return b.append('>').toString();
   }
   
-  public Location decrementedIf(boolean nonTop) {
-    return nonTop && addr!=null? new Location(addr-1, sym, shortFile, fullFile, line) : this;
+  public Location decrementedIf(boolean afterCall) {
+    return afterCall && addr!=null? new Location(addr-1, sym, shortFile, fullFile, line) : this;
   }
   
   public boolean equals(Object o) {

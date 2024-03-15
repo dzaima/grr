@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.function.*;
 
 public class DebuggerLayout extends GdbLayout {
-  public static final ProcThread.StackFrame BAD_STACKFRAME = new ProcThread.StackFrame(-1, new Location(0L, null, null, null, null), true);
+  public static final ProcThread.StackFrame BAD_STACKFRAME = new ProcThread.StackFrame(-1, new Location(0L, null, null, null, null), false);
   
   public boolean atMainState = true; // false during e.g. flamegraph sampling
   public boolean ignoreStateUpdates = false; // false during e.g. flamegraph sampling

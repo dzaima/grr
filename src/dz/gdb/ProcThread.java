@@ -32,13 +32,13 @@ public class ProcThread {
   public static class StackFrame {
     public final int level;
     public final Location l;
-    public final boolean nonTop;
+    public final boolean afterCall;
     public Vec<Arg> args;
     
-    public StackFrame(int level, Location l, boolean isTop) {
+    public StackFrame(int level, Location l, boolean afterCall) {
       this.level = level;
       this.l = l;
-      this.nonTop = !isTop;
+      this.afterCall = afterCall;
     }
     
     public String toString() {

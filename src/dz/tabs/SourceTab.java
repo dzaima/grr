@@ -45,7 +45,7 @@ public class SourceTab extends GrrTab<Layout> implements SerializableTab {
   }
   
   private String currFilename;
-  public void onSelectedFunction(Location l, boolean justFunction, boolean nonTop) {
+  public void onSelectedFunction(Location l, boolean justFunction, boolean afterCall) {
     if (!follow) return;
     if (l==null) toFileLine(null, null, -1);
     else toFileLine(l.shortFile, l.fullFile, l.line);
