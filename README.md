@@ -112,24 +112,25 @@ grr --cachegrind cachegrind-out input-executable # view results
 ![screenshot](https://dzaima.github.io/images/grr-java.png)
 
 ```sh
-# program must not itself write anything to stdout!
-perf record java -XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly ... > java-output # record all functions
-perf record java -XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -XX:CompileCommand=print,my.package.Foo::functionName ... > java-output # record a specific function
+# program must not itself write anything to stdout! (else the output may interleave assembly data printing, and afaict there's no way to redirect it)
+perf record java -XX:+UnlockDiagnosticVMOptions -XX:+DumpPerfMapAtExit -XX:+PrintAssembly ... > java-output # record all functions
+perf record java -XX:+UnlockDiagnosticVMOptions -XX:+DumpPerfMapAtExit -XX:+DebugNonSafepoints -XX:CompileCommand=print,my.package.Foo::functionName ... > java-output # record a specific function
 # record all functions in my.package.Foo and everything under jdk.incubator.vector with:
 #   -XX:CompileCommand=print,my.package.Foo::* -XX:CompileCommand=print,jdk.incubator.vector.*::*
 # -XX:+DebugNonSafepoints is implicit for PrintAssembly, but not for CompileCommand (it might help with additional source mapping)
 
-# Alternatively or additionally, this can be used to get JIT symbols without disassembly (can improve results even when combined with PrintAssembly):
-#   -XX:+DumpPerfMapAtExit
-# if using just this, storing java output and --jvm-out is unnecessary - just --perf is needed
+grr --perf . --jvm-out java-output --move /java-src/my/package:path/to/my/package
+# the --move remaps my.package.Foo to path/to/my/package/Foo.java (/java-src/ is a hard-coded prefix to differentiate from other paths)
+# it can be repeated, or excluded if source mapping isn't desired
 
-grr --perf . --jvm-out java-output --move /java-src/my/package:/path/to/my/package
-# the --move remaps my.package.Foo to /path/to/my/package/Foo.java (/java-src/ is a hard-coded prefix to differentiate from other paths)
+# alternatively, just record function names as symbols, without assembly:
+perf record java -XX:+UnlockDiagnosticVMOptions -XX:+DumpPerfMapAtExit ...
+grr --perf . # plain "perf report" works too
 ```
 
-Recorded program must be run with Java ≥14 (12 & 13 is untested so might work, 11 doesn't work).
+Recorded program must be run with Java ≥16 (≥14 with removing `-XX:+DumpPerfMapAtExit`).
 
-The `hsdis` plugin must not be installed, as with it OpenJDK disassembles machine code itself, whereas here the disassembly needs to be done by gdb.
+The `hsdis` plugin must not be installed, as with it OpenJDK disassembles the machine code itself, whereas here the disassembly needs to be done by gdb.
 
 
 
