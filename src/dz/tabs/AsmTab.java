@@ -61,43 +61,43 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
   }
   
   public void onSelectedFrame(Location l, boolean justFunction, StatSymbol stat0, boolean immediateSource) {
-    Consumer<DisasFn> onFn = fn -> {
-      if (fn==null || fn.ins==null || fn.ins.length==0) {
-        fn = stat0==null? null : stat0.forceDisas();
-        if (fn==null) {
-          asmList.setFn(null, null);
-          overlay.setFn(null, null);
-          g.selectSourceMapStack(null, stat0==null? null : stat0.sym.bin.file);
-          return;
-        }
-      }
-      
-      StatSymbol stat = stat0;
-      if (stat==null && fn.name!=null) stat = g.getPerfSymbol(new Location(null, fn.name, null, null, null)); // for rr+perf+perf JIT map
-      
-      int idx = g instanceof PerfLayout || l.addr==null || justFunction? -1 : fn.indexOf(l.addr);
-      setFn(fn, stat);
-      asmList.focusEntry(idx==-1? 0 : idx, ScrollNode.Mode.INSTANT);
-      if (immediateSource && asmList.ch.sz>0) {
-        asmList.sourceToThis(asmList.getEnt(0));
-      }
-      if (idx!=-1) {
-        AsmListNode.AsmEntry e = (AsmListNode.AsmEntry) asmList.ch.get(idx);
-        e.select(SelectableEntry.CT.QUIET);
-        asmList.activeEntry = e;
-        if (stat!=null) stat.onOneSelected(e.getStat());
-      }
-    };
-    
+    Long focusAddr = justFunction || l==null? null : l.addr;
     if (stat0!=null) {
       DisasFn ins = stat0.disas();
       if (ins!=null) {
-        onFn.accept(ins);
+        onSelectedDisasFn(ins, focusAddr, stat0, immediateSource);
         return;
       }
     }
     
-    if (l!=null) g.getDisas(stat0==null? null : stat0.sym.bin, l, onFn);
+    if (l!=null) g.getDisas(stat0==null? null : stat0.sym.bin, l, d -> onSelectedDisasFn(d, focusAddr, stat0, immediateSource));
+  }
+  
+  public void onSelectedDisasFn(DisasFn fn, Long focusAddr, StatSymbol stat, boolean immediateSource) {
+    if (fn==null || fn.ins==null || fn.ins.length==0) {
+      fn = stat==null? null : stat.forceDisas();
+      if (fn==null) {
+        asmList.setFn(null, null);
+        overlay.setFn(null, null);
+        g.selectSourceMapStack(null, stat==null? null : stat.sym.bin.file);
+        return;
+      }
+    }
+    
+    if (stat==null && fn.name!=null) stat = g.getPerfSymbol(new Location(null, fn.name, null, null, null)); // for rr+perf+perf JIT map
+    
+    int idx = focusAddr==null? -1 : fn.indexOf(focusAddr);
+    setFn(fn, stat);
+    asmList.focusEntry(idx==-1? 0 : idx, ScrollNode.Mode.INSTANT);
+    if (immediateSource && asmList.ch.sz>0) {
+      asmList.sourceToThis(asmList.getEnt(0));
+    }
+    if (idx!=-1) {
+      AsmListNode.AsmEntry e = (AsmListNode.AsmEntry) asmList.ch.get(idx);
+      e.select(SelectableEntry.CT.QUIET);
+      asmList.activeEntry = e;
+      if (stat!=null) stat.onOneSelected(e.getStat());
+    }
   }
   
   private void setFn(DisasFn fn, StatSymbol stat) {

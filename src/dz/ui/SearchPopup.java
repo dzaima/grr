@@ -10,6 +10,7 @@ import dzaima.ui.node.Node;
 import dzaima.utils.*;
 
 import java.util.Comparator;
+import java.util.function.Consumer;
 
 
 public abstract class SearchPopup extends Popup {
@@ -51,10 +52,10 @@ public abstract class SearchPopup extends Popup {
   void newValue() {
     if (waiting) { newValue = true; return; }
     waiting = true;
-    String n = name.getAll();
-    g.d.curr.symbolInfo(true, g.gc.getProp("grr.search.maxSymbols").i(), n, r -> {
+    String search = name.getAll();
+    Consumer<Vec<Pair<Location, Vec<ProcThread.Arg>>>> got = r -> {
       Vec<Pair<Location, Vec<ProcThread.Arg>>> s = new Vec<>();
-      if (r!=null) s.addAll(r);
+      if (r != null) s.addAll(r);
       s.sort(Comparator.comparing(x -> x.a.sym));
       s.sort(Comparator.comparing(x -> x.a.sym.length()));
       waiting = false;
@@ -64,14 +65,16 @@ public abstract class SearchPopup extends Popup {
           public void onSelect(CT type) {
             if (type.click1) accept(c.a, c.b);
           }
+          
           public int bgColCalc() {
             if (sel) return gc.getProp("grr.list.bgSelFocus").col();
             return super.bgColCalc();
           }
         });
       }
-      if (newValue) { newValue(); newValue=false; }
-      if (list.ch.sz>0) ((SelectableEntry) list.ch.get(0)).select(CT.QUIET);
-    });
+      if (newValue) { newValue(); newValue = false; }
+      if (list.ch.sz > 0) ((SelectableEntry) list.ch.get(0)).select(CT.QUIET);
+    };
+    g.d.curr.symbolInfo(true, g.gc.getProp("grr.search.maxSymbols").i(), search, got);
   }
 }
