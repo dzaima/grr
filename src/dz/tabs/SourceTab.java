@@ -130,13 +130,12 @@ public class SourceTab extends GrrTab<Layout> implements SerializableTab {
   }
   
   public void setHover(Vec<Location> ls) {
+    clearHighlightIn = 10;
     for (Location l : ls) {
       if (Objects.equals(l.fullFile, currFilename) && l.line!=null) {
         code.setHoverHighlight(l.line-1);
         clearHighlightIn = 0;
         break;
-      } else {
-        clearHighlightIn = 10;
       }
     }
   }
