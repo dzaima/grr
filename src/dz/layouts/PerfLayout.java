@@ -69,6 +69,8 @@ public class PerfLayout extends GdbLayout {
       return;
     }
     
+    if (bin.virtSym) { res.accept(null); return; }
+    
     String path = remap(bin.file);
     Path ff = Paths.get(path);
     if (path.endsWith(".map") && loadedMaps.add(path)) loadJITMap(-1, ff);
