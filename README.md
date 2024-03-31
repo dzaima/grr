@@ -57,7 +57,7 @@ A simple `grr some-program` will run the program in gdb. `grr some-program foo b
 
 #### JIT symbol map
 
-An attempt is made to read `/tmp/perf-<pid>.map` for JIT symbol ranges (disassembly not included). The file format is the same as that expected by `perf report`, that is, lines of `hexAddress hexLength name` - e.g. a line of `12AB C my function` represents a function starting at `0x12AB`, 12 bytes long, and the name `my function`.
+An attempt is made to read `/tmp/perf-<pid>.map` for JIT symbol ranges (disassembly not included). The file format is the same as that expected by `perf report`, that is, lines of `hexAddress hexLength name` - e.g. a line of `12AB E my function` represents a function starting at `0x12AB`, 14 bytes long, and the name `my function`.
 
 
 
@@ -114,7 +114,7 @@ grr --cachegrind cachegrind-out input-executable # view results
 ```sh
 # program must not itself write anything to stdout! (else the output may interleave assembly data printing, and afaict there's no way to redirect it)
 perf record java -XX:+UnlockDiagnosticVMOptions -XX:+DumpPerfMapAtExit -XX:+PrintAssembly ... > java-output # record all functions
-perf record java -XX:+UnlockDiagnosticVMOptions -XX:+DumpPerfMapAtExit -XX:+DebugNonSafepoints -XX:CompileCommand=print,my.package.Foo::functionName ... > java-output # record a specific function
+perf record java -XX:+UnlockDiagnosticVMOptions -XX:+DumpPerfMapAtExit -XX:+DebugNonSafepoints -XX:CompileCommand=print,my.package.Foo::functionName ... > java-output # or record a specific function
 # record all functions in my.package.Foo and everything under jdk.incubator.vector with:
 #   -XX:CompileCommand=print,my.package.Foo::* -XX:CompileCommand=print,jdk.incubator.vector.*::*
 # -XX:+DebugNonSafepoints is implicit for PrintAssembly, but not for CompileCommand (it might help with additional source mapping)
