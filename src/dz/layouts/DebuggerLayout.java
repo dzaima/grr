@@ -55,6 +55,7 @@ public class DebuggerLayout extends GdbLayout {
     String gdbBin = o.optOne("--gdb-bin");
     rrBin = o.optOne("--rr-bin");
     exeName = bin.sz==0? null : bin.get(0);
+    boolean nothingDebugged = false;
     if (rr) {
       Vec<String> extra = new Vec<>();
       extra.addAll(o.optArgs("--rr-arg"));
@@ -83,6 +84,8 @@ public class DebuggerLayout extends GdbLayout {
           });
           if (!noRun) e.open(bin.get(1, bin.sz, String[].class), null);
         }
+      } else {
+        nothingDebugged = true;
       }
     }
     dbiInit(o);
@@ -104,6 +107,15 @@ public class DebuggerLayout extends GdbLayout {
     }
     
     loadSampleData(o, bin.sz==0? null : bin.get(0), false);
+    
+    if (javaMach!=null && nothingDebugged) {
+      Path elf = javaMach.elfPath();
+      if (elf!=null) {
+        d.toExe(d.makeExe(elf), b -> {
+          if (!b) Log.error("debugger load", "Failed to open debugger to file \""+elf+"\"");
+        });
+      }
+    }
     
     node.ctx.id("toolbar").add(toolbar = node.ctx.make(gc.getProp(d.isRR()? "grr.rrToolbar" : "grr.gdbToolbar").gr()));
     
@@ -324,7 +336,7 @@ public class DebuggerLayout extends GdbLayout {
   
   
   public void getDisas(Binary bin, Location frame, Consumer<DisasFn> res) {
-    getDisas(frame, FnCache.NameMode.PREFIX, sourceInjector(res));
+    getDisasDirect(frame, FnCache.NameMode.PREFIX, sourceInjector(res));
   }
   
   public static String pad(String v, char s, int len) {

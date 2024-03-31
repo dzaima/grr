@@ -133,19 +133,32 @@ public abstract class GdbLayout extends Layout {
   
   
   private final FnCache cache = new FnCache();
-  public void getDisas(Location l, FnCache.NameMode nameMode, Consumer<DisasFn> res) {
+  public void getDisasDirect(Location l, FnCache.NameMode nameMode, Consumer<DisasFn> res) {
     cache.disas(-1, d, l, nameMode, res, d.isRR()); // TODO don't -1 if possible and get things working properly
   }
-  public DisasFn injectCustomSource(DisasFn fn) {
-    if (fn==null) return null;
+  public void injectCustomSource(DisasFn fn, Consumer<DisasFn> res) {
+    if (fn==null) {
+      res.accept(null);
+      return;
+    }
     if (javaMach!=null) {
       JavaPrintAssembly.JSym sym = javaMach.findByName(fn.name);
-      if (sym!=null) for (DisasFn.ParsedIns c : fn.ins) c.map = sym.findSource(c.s);
+      if (sym!=null) {
+        if (fn.ins == null) {
+          sym.insFrom(d.curr, r -> {
+            for (DisasFn.ParsedIns c : r) c.map = sym.findSource(c.s);
+            res.accept(new DisasFn(fn.s, fn.e, fn.name, r, fn.jit, fn.forceCfg));
+          });
+          return;
+        } else {
+          for (DisasFn.ParsedIns c : fn.ins) c.map = sym.findSource(c.s);
+        }
+      }
     }
-    return fn;
+    res.accept(fn);
   }
   public Consumer<DisasFn> sourceInjector(Consumer<DisasFn> f) {
-    return r -> f.accept(injectCustomSource(r));
+    return r -> injectCustomSource(r, f);
   }
   
   public void stopped() {

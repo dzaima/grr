@@ -11,7 +11,6 @@ import dzaima.ui.node.types.tabs.SerializableTab;
 import dzaima.utils.*;
 import dzaima.utils.options.Options;
 
-import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.Consumer;
@@ -50,25 +49,22 @@ public class PerfLayout extends GdbLayout {
   
   public Executable currFile;
   private final HashSet<String> loadedMaps = new HashSet<>();
-  private Path javaJITElf;
   public void getDisas(Binary bin, Location l, Consumer<DisasFn> res) {
     if (bin.file==null || (l.addr==null && l.sym==null)) { res.accept(null); return; }
     
     if (bin.file.startsWith(JavaPrintAssembly.ID_PRE) && javaMach!=null) {
       JavaPrintAssembly.JSym sym = javaMach.findByID(bin.file);
       
-      if (javaJITElf==null) {
-        try { javaJITElf = Files.createTempFile("grrtmp_", ".elf"); }
-        catch (IOException e) { res.accept(null); return; }
-        Main.filesToRemoveOnClose.add(javaJITElf);
-        javaMach.writeElf(javaJITElf);
-      }
+      Path jitElf = javaMach.elfPath();
+      if (jitElf==null) { res.accept(null); return; }
       
-      currFile = d.makeExe(javaJITElf);
+      currFile = d.makeExe(jitElf);
       d.toExe(currFile, b -> {
-        if (b) currFile.disasSegment(sym.addrS, sym.addrE, Executable.DisasMode.OPS, r -> {
-          res.accept(injectCustomSource(new DisasFn(sym.addrS, sym.addrE, sym.name, FnCache.insns(r), false, null)));
-        });
+        if (b) {
+          sym.insFrom(currFile, r -> {
+            injectCustomSource(new DisasFn(sym.addrS, sym.addrE, sym.name, r, false, null), r2 -> res.accept(r2));
+          });
+        }
       });
       return;
     }
@@ -83,11 +79,11 @@ public class PerfLayout extends GdbLayout {
           Log.error("disas", "failed to open \""+currFile.p+"\" for disassembly");
           res.accept(null);
         } else {
-          getDisas(l, FnCache.NameMode.PREFIX, sourceInjector(res));
+          getDisasDirect(l, FnCache.NameMode.PREFIX, sourceInjector(res));
         }
       });
     } else {
-      getDisas(l, FnCache.NameMode.PREFIX, sourceInjector(res));
+      getDisasDirect(l, FnCache.NameMode.PREFIX, sourceInjector(res));
     }
   }
   

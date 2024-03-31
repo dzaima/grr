@@ -6,7 +6,7 @@ public class Location {
   public static final Location IDK = new Location(null, null, null, null, null);
   public final Long addr;
   public final String sym;
-  public final String shortFile, fullFile;
+  public final String shortFile, fullFile; // TODO: describe/verify when this is a source file and when a binary (or separate the two)
   public final Integer line;
   
   public Location(Long addr, String sym, String shortFile, String fullFile, Integer line) {

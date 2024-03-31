@@ -126,6 +126,8 @@ grr --perf . --jvm-out java-output --move /java-src/my/package:path/to/my/packag
 # alternatively, just record function names as symbols, without assembly:
 perf record java -XX:+UnlockDiagnosticVMOptions -XX:+DumpPerfMapAtExit ...
 grr --perf . # plain "perf report" works too
+
+# alternatively, all perf stuff can be left out, and "grr --jvm-out java-output" allows viewing plain disassemblies
 ```
 
 Recorded program must be run with Java ≥16 (≥14 with removing `-XX:+DumpPerfMapAtExit`).

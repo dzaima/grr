@@ -1,6 +1,8 @@
 package dz.general.java;
 
-import dz.general.DisasFn;
+import dz.Main;
+import dz.gdb.Executable;
+import dz.general.*;
 import dz.general.file.*;
 import dz.utils.LineRequeue;
 import dzaima.utils.*;
@@ -9,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class JavaPrintAssembly {
   public final Vec<JSym> syms;
@@ -29,6 +32,17 @@ public class JavaPrintAssembly {
   
   public static final String ID_PRE = "//java-dyn";
   private static int idCtr = 0;
+  
+  private Path elf;
+  public Path elfPath() {
+    if (elf==null) {
+      try { elf = Files.createTempFile("grrtmp_", ".elf"); }
+      catch (IOException e) { return null; }
+      Main.filesToRemoveOnClose.add(elf);
+      writeElf(elf);
+    }
+    return elf;
+  }
   
   public static final class JSym {
     public final byte[] code;
@@ -52,6 +66,10 @@ public class JavaPrintAssembly {
     public DisasFn.SourceMap findSource(long addr) {
       int i = maps.binarySearch(c -> c.a >= addr);
       return i<maps.sz? maps.get(i).b : null;
+    }
+    
+    public void insFrom(Executable file, Consumer<DisasFn.ParsedIns[]> res) {
+      file.disasSegment(addrS, addrE, Executable.DisasMode.OPS, r -> res.accept(FnCache.insns(r)));
     }
   }
   
