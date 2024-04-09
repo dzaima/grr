@@ -121,7 +121,7 @@ public class Executable {
       });
     };
     Runnable tryAddr = () -> {
-      if (l.addr==null || nameMode==FnCache.NameMode.RANGE_ONLY) trySym.run();
+      if (l.addr==null || l.addr==0 || nameMode==FnCache.NameMode.RANGE_ONLY) trySym.run();
       else disasAroundAddr(decrementLoc? l.addr-1 : l.addr, mode, r -> {
         if (r!=null) got.got(r, Properness.FULL);
         else trySym.run();
