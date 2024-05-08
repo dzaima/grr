@@ -8,15 +8,15 @@ public class Location {
   public static final Location IDK = new Location(null, null, null, null, null);
   @Nullable public final Long addr;
   @Nullable public final String sym;
-  @Nullable public final String fullFile; // if `line!=null`, fullFile is a proper source file path; else, either a source file or binary if any
-  @Nullable public final String shortFile; // pretty description of source (not necessarily a file path; definitely not if fullFile==null)
-  @Nullable public final Integer line;
+  @Nullable public final String file; // if `line!=null`, file is a proper source file path; else, either a source file or binary if any
+  @Nullable public final String sourceInfo; // pretty description of source (perhaps path-ish, but definitely not if file==null)
+  @Nullable public final Integer line; // line in file, 1-indexed
   
-  public Location(Long addr, String sym, String shortFile, String fullFile, Integer line) {
+  public Location(Long addr, String sym, String sourceInfo, String file, Integer line) {
     this.addr = addr;
     this.sym = sym;
-    this.shortFile = shortFile;
-    this.fullFile = fullFile;
+    this.sourceInfo = sourceInfo;
+    this.file = file;
     this.line = line;
   }
   
@@ -25,20 +25,20 @@ public class Location {
     StringBuilder b = new StringBuilder("<loc");
     if (addr!=null) b.append(" 0x").append(Long.toHexString(addr));
     if (sym!=null) b.append(" @").append(sym);
-    if (shortFile!=null) b.append(" sf=").append(shortFile);
-    if (fullFile !=null) b.append(" ff=").append(fullFile);
+    if (sourceInfo!=null) b.append(" i=").append(sourceInfo);
+    if (file!=null) b.append(" f=").append(file);
     if (line!=null) b.append(" L").append(line);
     return b.append('>').toString();
   }
   
   public Location decrementedIf(boolean afterCall) {
-    return afterCall && addr!=null? new Location(addr-1, sym, shortFile, fullFile, line) : this;
+    return afterCall && addr!=null? new Location(addr-1, sym, sourceInfo, file, line) : this;
   }
   
   public boolean equals(Object o) {
     if (!(o instanceof Location)) return false;
     Location l = (Location) o;
     return Objects.equals(addr, l.addr) && Objects.equals(sym, l.sym)
-      && Objects.equals(shortFile, l.shortFile) && Objects.equals(fullFile, l.fullFile) && Objects.equals(line, l.line);
+      && Objects.equals(sourceInfo, l.sourceInfo) && Objects.equals(file, l.file) && Objects.equals(line, l.line);
   }
 }

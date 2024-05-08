@@ -89,7 +89,7 @@ public class DisasFn implements Comparable<DisasFn>, AddrMapper.Range {
   public static class SourceMap {
     public static final SourceMap NONE = new SourceMap(null, null, null, null, -1, -1);
     public final SourceMap next; // to build a stack of source mappings if such is supported by debug info
-    public final String shortFile, fullFile; // either both are null, or both are set
+    public final String shortFile, fullFile; // either both are null, or both are set; TODO no?
     public final String fnName;
     public final int line, col; // -1 if unsupported
     public SourceMap(SourceMap next, String shortFile, String fullFile, String fnName, int line, int col) {

@@ -47,14 +47,14 @@ public class SourceTab extends GrrTab<Layout> implements SerializableTab {
   private String currFilename;
   public void onSelectedFunction(Location l, boolean justFunction, boolean afterCall) {
     if (!follow) return;
-    if (l==null) toFileLine(null, null, -1);
-    else toFileLine(l.fullFile, l.shortFile, l.line);
+    if (l==null) toFileLine(null, null, -1, null);
+    else toFileLine(l.file, l.sourceInfo, l.line, null);
   }
   
   private void noteNoFile(String file, String sourceInfo, int line, String bin) {
     code.removeAll();
-    String r = "Couldn't read file:\n";
-    if (file==null) r+= "  unknown file";
+    String r = "Couldn't find source file:\n";
+    if (file==null) r+= "  unknown path";
     else r+= "  path: " + file + (line==-1? "" : ", line " + (line+1));
     if (sourceInfo!=null) r+= " ("+sourceInfo+")";
     r+= "\n";
@@ -64,13 +64,10 @@ public class SourceTab extends GrrTab<Layout> implements SerializableTab {
     code.append(r);
     code.um.clear();
   }
+  
+  
   boolean srcFound;
-  public void toFileLine(String file, String sourceInfo, Integer ln0) {
-    toFileLine(file, sourceInfo, ln0, null);
-  }
-  
-  
-  public void toFileLine(String file, String sourceInfo, Integer ln0, String bin) {
+  private void toFileLine(String file, String sourceInfo, Integer ln0, String bin) {
     int line = ln0==null? -1 : ln0-1;
     if (Objects.equals(file, currFilename)) {
       if (file!=null && srcFound) {
@@ -134,7 +131,7 @@ public class SourceTab extends GrrTab<Layout> implements SerializableTab {
   public void setHover(Vec<Location> ls) {
     clearHighlightIn = 10;
     for (Location l : ls) {
-      if (Objects.equals(l.fullFile, currFilename) && l.line!=null) {
+      if (Objects.equals(l.file, currFilename) && l.line!=null) {
         code.setHoverHighlight(l.line-1);
         clearHighlightIn = 0;
         break;

@@ -34,11 +34,10 @@ public class LocationUtils {
     
     n.ctx.id("func").add(new StringNode(ctx, l.sym==null? "??" : l.sym));
     
-    if (l.shortFile!=null) {
+    String path = l.sourceInfo!=null? l.sourceInfo : l.file;
+    if (path!=null) {
       Node file = ctx.make(gc.getProp("grr.stack.ifFile").gr());
-      String filePath = l.shortFile;
-      filePath = Paths.get(filePath).normalize().toString();
-      file.ctx.id("file").add(new StringNode(ctx, filePath));
+      file.ctx.id("file").add(new StringNode(ctx, Paths.get(path).normalize().toString()));
       if (l.line!=null && l.line!=-1) file.ctx.id("line").add(new StringNode(ctx, ":"+ l.line));
       n.ctx.id("ifFile").add(file);
     }
