@@ -46,7 +46,7 @@ public class StackTab extends GrrTab<DebuggerLayout> implements SerializableTab 
     drClear.cancel();
     list.clearCh();
     if (curr!=null) for (StackFrame f : curr) {
-      if ((f.l.sym==null || f.l.sym.equals("??")) && f.l.addr!=null) {
+      if (f.l.sym==null && f.l.addr!=null) {
         Location l2 = g.cachedJITLocation(f.l);
         if (l2!=null) f = new StackFrame(f.level, l2, f.afterCall);
       }

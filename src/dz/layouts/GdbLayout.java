@@ -139,7 +139,7 @@ public abstract class GdbLayout extends Layout {
   public Location cachedJITLocation(Location l) {
     DisasFn d = cache.getJIT(-1, l);
     if (d==null) return null;
-    return new Location(l.addr, d.name, "JIT", null, null);
+    return new Location(l.addr, d.name, null, null, "JIT");
   }
   public void injectCustomSource(DisasFn fn, Consumer<DisasFn> res) {
     if (fn==null) {

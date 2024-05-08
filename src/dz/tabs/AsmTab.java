@@ -241,7 +241,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
         else g.d.curr.sourceInfo(i.s, i.e(), v -> {
           locCache.remove(i);
           if (v==null) e0.ins.map = SourceMap.NONE;
-          else e0.ins.map = new SourceMap(null, v.sourceInfo, v.file, fn==null? null : fn.name, v.line==null? -1 : v.line, -1);
+          else e0.ins.map = new SourceMap(null, fn==null? null : fn.name, v.file, v.line==null? -1 : v.line, -1, v.sourceInfo);
           r.set(null);
         });
       })).then(z -> l.accept(e0.ins.map));

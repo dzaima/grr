@@ -68,9 +68,9 @@ public class LocationUtils {
     return new Location(
       readFld(m2||m3?  "address"      :"addr", vs, GdbFormat.GVal::addr),
       readFld(m3?"name":m2?"func-name":"func", vs, c -> c.str().equals("??")? null : c.str()),
-      readFld(m3?          "filename" :"file", vs, GdbFormat.GVal::str),
       readFld("fullname",                      vs, GdbFormat.GVal::str),
-      readFld("line",                          vs, GdbFormat.GVal::asInt)
+      readFld("line",                          vs, GdbFormat.GVal::asInt),
+      readFld(m3?          "filename" :"file", vs, GdbFormat.GVal::str)
     );
   }
   

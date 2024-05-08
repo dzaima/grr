@@ -37,7 +37,7 @@ public class SymbolizeElf {
         for (ElfParser.Symbol sym : syms) {
           if (sym.size==0) continue;
           long s = sym.addr;
-          map.overrideRange(new Symbolize.Sym(s, s+sym.size, new Location(s, sym.name, bin.desc, bin.file, null)));
+          map.overrideRange(new Symbolize.Sym(s, s+sym.size, new Location(s, sym.name, bin.file, null, bin.desc)));
         }
       };
       

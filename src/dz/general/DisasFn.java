@@ -87,15 +87,15 @@ public class DisasFn implements Comparable<DisasFn>, AddrMapper.Range {
   }
   
   public static class SourceMap {
-    public static final SourceMap NONE = new SourceMap(null, null, null, null, -1, -1);
+    public static final SourceMap NONE = new SourceMap(null, null, null, -1, -1, null);
     public final SourceMap next; // to build a stack of source mappings if such is supported by debug info
-    public final String shortFile, fullFile; // either both are null, or both are set; TODO no?
     public final String fnName;
+    public final String file, sourceInfo;
     public final int line, col; // -1 if unsupported
-    public SourceMap(SourceMap next, String shortFile, String fullFile, String fnName, int line, int col) {
+    public SourceMap(SourceMap next, String fnName, String file, int line, int col, String sourceInfo) {
       this.next = next;
-      this.shortFile = shortFile;
-      this.fullFile = fullFile;
+      this.sourceInfo = sourceInfo;
+      this.file = file;
       this.fnName = fnName;
       this.line = line;
       this.col = col;
@@ -112,7 +112,7 @@ public class DisasFn implements Comparable<DisasFn>, AddrMapper.Range {
     
     public static Location loc(long addr, SourceMap m) {
       if (m==null) return null;
-      return new Location(addr, m.fnName, m.shortFile, m.fullFile, m.line==-1? null : m.line);
+      return new Location(addr, m.fnName, m.file, m.line==-1? null : m.line, m.sourceInfo);
     }
   }
 }

@@ -41,7 +41,7 @@ public class SourceTab extends GrrTab<Layout> implements SerializableTab {
   public void onSelectedSourceMap(DisasFn.SourceMap map, String bin) {
     if (!follow) return;
     if (map==null) toFileLine(null, null, 0, bin);
-    else toFileLine(map.fullFile, map.shortFile, map.line, bin);
+    else toFileLine(map.file, map.sourceInfo, map.line, bin);
   }
   
   private String currFilename;
@@ -51,8 +51,13 @@ public class SourceTab extends GrrTab<Layout> implements SerializableTab {
     else toFileLine(l.file, l.sourceInfo, l.line, null);
   }
   
-  private void noteNoFile(String file, String sourceInfo, int line, String bin) {
+  private void toNote(String note) {
     code.removeAll();
+    code.setLang(g.gc.langs().defLang);
+    code.append(note);
+    code.um.clear();
+  }
+  private void noteNoFile(String file, String sourceInfo, int line, String bin) {
     String r = "Couldn't find source file:\n";
     if (file==null) r+= "  unknown path";
     else r+= "  path: " + file + (line==-1? "" : ", line " + (line+1));
@@ -60,21 +65,17 @@ public class SourceTab extends GrrTab<Layout> implements SerializableTab {
     r+= "\n";
     String fRe = g.remap(file);
     if (!Objects.equals(fRe, file)) r+= "  remapped to: "+fRe+"\n";
-    r+= "  for binary "+bin;
-    code.append(r);
-    code.um.clear();
+    if (bin!=null) r+= "  for binary "+bin;
+    toNote(r);
   }
+  
   
   
   boolean srcFound;
   private void toFileLine(String file, String sourceInfo, Integer ln0, String bin) {
     int line = ln0==null? -1 : ln0-1;
-    if (Objects.equals(file, currFilename)) {
-      if (file!=null && srcFound) {
-        focusLine(line);
-      } else if (file!=null || sourceInfo!=null) {
-        noteNoFile(file, sourceInfo, line, bin);
-      }
+    if (Objects.equals(file, currFilename) && srcFound) {
+      focusLine(line);
     } else {
       srcFound = false;
       code.removeAll();
@@ -93,13 +94,10 @@ public class SourceTab extends GrrTab<Layout> implements SerializableTab {
             appendTimeLeft = 2;
           } else append.run();
         } else {
-          code.setLang(g.gc.langs().defLang);
           noteNoFile(file, sourceInfo, line, bin);
         }
       } else {
-        code.setLang(g.gc.langs().defLang);
-        code.append("(no attached file"+(bin==null? "" : " for "+bin) + ")");
-        code.um.clear();
+        toNote("(no attached file"+(bin==null? "" : " for "+bin) + ")");
       }
       currFilename = file;
     }

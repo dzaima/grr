@@ -1,6 +1,6 @@
 package dz.debugger;
 
-import dzaima.utils.Nullable;
+import dzaima.utils.*;
 
 import java.util.Objects;
 
@@ -12,12 +12,13 @@ public class Location {
   @Nullable public final String sourceInfo; // pretty description of source (perhaps path-ish, but definitely not if file==null)
   @Nullable public final Integer line; // line in file, 1-indexed
   
-  public Location(Long addr, String sym, String sourceInfo, String file, Integer line) {
+  public Location(Long addr, String sym, String file, Integer line, String sourceInfo) {
     this.addr = addr;
     this.sym = sym;
     this.sourceInfo = sourceInfo;
     this.file = file;
     this.line = line;
+    if ("??".equals(sym)) Log.stacktraceHere("Location??");
   }
   
   
@@ -32,7 +33,7 @@ public class Location {
   }
   
   public Location decrementedIf(boolean afterCall) {
-    return afterCall && addr!=null? new Location(addr-1, sym, sourceInfo, file, line) : this;
+    return afterCall && addr!=null? new Location(addr-1, sym, file, line, sourceInfo) : this;
   }
   
   public boolean equals(Object o) {
