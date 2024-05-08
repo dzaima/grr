@@ -2,37 +2,47 @@ package dz.general;
 
 import dz.debugger.Location;
 import dz.gdb.*;
-import dz.utils.OverlapMapper;
+import dz.utils.*;
 import dzaima.utils.Vec;
 
 import java.util.*;
 import java.util.function.Consumer;
 
-public class FnCache { // TODO actually cache
+public class FnCache {
   public static final Set<String> DISAS_BLACKLIST = Set.of(
     "_breakpoint_table_entry_end",
-    "code_gen_buffer" // QEMU's multi-megabyte buffer of all JITted things
+    "code_gen_buffer" // QEMU's multi-megabyte buffer of all its JITted things
   );
   
   private static final int JIT_BYTES = 1000;
   OverlapMapper<DisasFn> jitMapGlobal = new OverlapMapper<>();
   public final HashMap<Long, OverlapMapper<DisasFn>> jitMaps = new HashMap<>();
-  
-  public enum NameMode { RANGE_ONLY, NONE, EXACT, PREFIX }
+  public final OverlapMapper<DisasFn> disasCache = new OverlapMapper<>();
   
   public void prepRead(DisasFn f, Dbi d, boolean isLive, Consumer<DisasFn> got) {
     if (!isLive) {
       got.accept(f);
     } else if (f.e-f.s < 100000) {
       d.curr.disasSegment(f.s, f.e, Executable.DisasMode.OPS, ins -> {
-        if (ins==null) got.accept(f);
-        else got.accept(new DisasFn(f.s, f.e, f.name, insns(ins), true, null));
+        if (ins==null) {
+          got.accept(f);
+        } else {
+          DisasFn r = new DisasFn(f.s, f.e, f.name, insns(ins), true, null);
+          if (shouldCacheJIT) disasCache.addFullRange(r);
+          got.accept(r);
+        }
       });
     }
   }
   
+  public enum NameMode { RANGE_ONLY, NONE, EXACT, PREFIX }
   public void disas(long pid, Dbi d, Location l, NameMode mode, Consumer<DisasFn> got, boolean isLive) {
     if (l.sym!=null && DISAS_BLACKLIST.contains(l.sym)) mode = NameMode.RANGE_ONLY;
+    
+    if (l.addr!=null && disasCache.find(l.addr)!=null) {
+      got.accept(disasCache.findBase(l.addr));
+      return;
+    }
     
     DisasFn a = getJIT(pid, l);
     if (a!=null) { prepRead(a, d, isLive, got); return; }
@@ -41,7 +51,9 @@ public class FnCache { // TODO actually cache
       if (proper==Executable.Properness.NONE) {
         got.accept(null);
       } else {
-        got.accept(new DisasFn(s, e, name, insns(ins), proper==Executable.Properness.DYN, null));
+        DisasFn r = new DisasFn(s, e, name, insns(ins), proper==Executable.Properness.DYN, null);
+        disasCache.addFullRange(r);
+        got.accept(r);
       }
     });
   }
@@ -74,4 +86,9 @@ public class FnCache { // TODO actually cache
     return insns.toArray(new DisasFn.ParsedIns[0]);
   }
   
+  public boolean shouldCacheJIT = true;
+  public void setShouldCacheJIT(boolean should) {
+    shouldCacheJIT = should;
+    disasCache.removeAll();
+  }
 }

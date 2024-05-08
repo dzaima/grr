@@ -415,6 +415,7 @@ grr {
             // grr.$textEntryLine { t="instr pad:" id=insPad }
             grr.$labeledCheckbox { id=raw t="raw bytes" }
             grr.$textEntryLine { t="raw pad:" id=rawPad }
+            grr.$labeledCheckbox { id=cacheJIT t="cache JIT disas" }
           }
         }}
         

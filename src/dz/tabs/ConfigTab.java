@@ -44,6 +44,10 @@ public class ConfigTab extends GrrTab<GdbLayout> implements SerializableTab {
     raw = (CheckboxNode) node.ctx.id("raw");
     raw.setFn(b -> g.setAsmConfig(g.asmConfig.withRaw(b)));
     
+    CheckboxNode cacheJIT = (CheckboxNode) node.ctx.id("cacheJIT");
+    cacheJIT.set(g.cache.shouldCacheJIT);
+    cacheJIT.setFn(g.cache::setShouldCacheJIT);
+    
     rawPad = (EditNode) node.ctx.id("rawPad");
     rawPad.setFn((a,mod) -> {
       if (!a.done) return false;
