@@ -136,6 +136,11 @@ public abstract class GdbLayout extends Layout {
   public void getDisasDirect(Location l, FnCache.NameMode nameMode, Consumer<DisasFn> res) {
     cache.disas(-1, d, l, nameMode, res, d.isRR()); // TODO don't -1 if possible and get things working properly
   }
+  public Location cachedJITLocation(Location l) {
+    DisasFn d = cache.getJIT(-1, l);
+    if (d==null) return null;
+    return new Location(l.addr, d.name, "JIT", null, null);
+  }
   public void injectCustomSource(DisasFn fn, Consumer<DisasFn> res) {
     if (fn==null) {
       res.accept(null);

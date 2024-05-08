@@ -34,16 +34,8 @@ public class FnCache { // TODO actually cache
   public void disas(long pid, Dbi d, Location l, NameMode mode, Consumer<DisasFn> got, boolean isLive) {
     if (l.sym!=null && DISAS_BLACKLIST.contains(l.sym)) mode = NameMode.RANGE_ONLY;
     
-    if (l.addr!=null) {
-      OverlapMapper<DisasFn> m = jitMaps.get(pid);
-      if (m!=null) {
-        DisasFn a = m.findBase(l.addr);
-        if (a!=null) { prepRead(a, d, isLive, got); return; }
-      }
-      
-      DisasFn a = jitMapGlobal.findBase(l.addr);
-      if (a!=null) { prepRead(a, d, isLive, got); return; }
-    }
+    DisasFn a = getJIT(pid, l);
+    if (a!=null) { prepRead(a, d, isLive, got); return; }
     
     d.curr.disasLocation(l, false, Executable.DisasMode.OPS, mode, JIT_BYTES, (name, s, e, ins, proper) -> {
       if (proper==Executable.Properness.NONE) {
@@ -61,6 +53,17 @@ public class FnCache { // TODO actually cache
     // else jitMaps.computeIfAbsent(pid, l->new OverlapMapper<>()).addFullRange(fn);
     jitMapGlobal.addFullRange(fn);
     return fn;
+  }
+  
+  public DisasFn getJIT(long pid, Location l) {
+    if (l.addr==null) return null;
+    OverlapMapper<DisasFn> m = jitMaps.get(pid);
+    if (m!=null) {
+      DisasFn a = m.findBase(l.addr);
+      if (a!=null) return a;
+    }
+    
+    return jitMapGlobal.findBase(l.addr);
   }
   
   

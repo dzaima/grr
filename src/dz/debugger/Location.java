@@ -1,13 +1,16 @@
 package dz.debugger;
 
+import dzaima.utils.Nullable;
+
 import java.util.Objects;
 
 public class Location {
   public static final Location IDK = new Location(null, null, null, null, null);
-  public final Long addr;
-  public final String sym;
-  public final String shortFile, fullFile; // TODO: describe/verify when this is a source file and when a binary (or separate the two)
-  public final Integer line;
+  @Nullable public final Long addr;
+  @Nullable public final String sym;
+  @Nullable public final String fullFile; // if `line!=null`, fullFile is a proper source file path; else, either a source file or binary if any
+  @Nullable public final String shortFile; // pretty description of source (not necessarily a file path; definitely not if fullFile==null)
+  @Nullable public final Integer line;
   
   public Location(Long addr, String sym, String shortFile, String fullFile, Integer line) {
     this.addr = addr;

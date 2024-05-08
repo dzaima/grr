@@ -1,7 +1,7 @@
 package dz.gdb;
 
 import dz.debugger.Location;
-import dzaima.utils.Vec;
+import dzaima.utils.*;
 
 import java.util.function.*;
 
@@ -31,7 +31,7 @@ public class ProcThread {
   
   public static class StackFrame {
     public final int level;
-    public final Location l;
+    @NotNull public final Location l;
     public final boolean afterCall;
     public Vec<Arg> args;
     

@@ -41,46 +41,48 @@ public class SourceTab extends GrrTab<Layout> implements SerializableTab {
   public void onSelectedSourceMap(DisasFn.SourceMap map, String bin) {
     if (!follow) return;
     if (map==null) toFileLine(null, null, 0, bin);
-    else toFileLine(map.shortFile, map.fullFile, map.line, bin);
+    else toFileLine(map.fullFile, map.shortFile, map.line, bin);
   }
   
   private String currFilename;
   public void onSelectedFunction(Location l, boolean justFunction, boolean afterCall) {
     if (!follow) return;
     if (l==null) toFileLine(null, null, -1);
-    else toFileLine(l.shortFile, l.fullFile, l.line);
+    else toFileLine(l.fullFile, l.shortFile, l.line);
   }
   
-  private void noteNoFile(String file, String fullFile, int line, String bin) {
+  private void noteNoFile(String file, String sourceInfo, int line, String bin) {
     code.removeAll();
     String r = "Couldn't read file:\n";
-    if (fullFile==null) r+= "  unknown file";
-    else r+= "  path: " + fullFile + (line==-1? "" : ", line " + (line+1)) + "\n";
-    String fRe = g.remap(fullFile);
-    if (!Objects.equals(fRe, fullFile)) r+= "  remapped to: "+fRe+"\n";
+    if (file==null) r+= "  unknown file";
+    else r+= "  path: " + file + (line==-1? "" : ", line " + (line+1));
+    if (sourceInfo!=null) r+= " ("+sourceInfo+")";
+    r+= "\n";
+    String fRe = g.remap(file);
+    if (!Objects.equals(fRe, file)) r+= "  remapped to: "+fRe+"\n";
     r+= "  for binary "+bin;
     code.append(r);
     code.um.clear();
   }
   boolean srcFound;
-  public void toFileLine(String file, String fullFile, Integer ln0) {
-    toFileLine(file, fullFile, ln0, null);
+  public void toFileLine(String file, String sourceInfo, Integer ln0) {
+    toFileLine(file, sourceInfo, ln0, null);
   }
   
   
-  public void toFileLine(String file, String fullFile, Integer ln0, String bin) {
+  public void toFileLine(String file, String sourceInfo, Integer ln0, String bin) {
     int line = ln0==null? -1 : ln0-1;
-    if (Objects.equals(fullFile, currFilename)) {
+    if (Objects.equals(file, currFilename)) {
       if (file!=null && srcFound) {
         focusLine(line);
-      } else if (file!=null) {
-        noteNoFile(file, fullFile, line, bin);
+      } else if (file!=null || sourceInfo!=null) {
+        noteNoFile(file, sourceInfo, line, bin);
       }
     } else {
       srcFound = false;
       code.removeAll();
       if (file!=null) {
-        String s = g.readFile(fullFile);
+        String s = g.readFile(file);
         if (s!=null) {
           srcFound = true;
           code.setLang(g.gc.langs().fromFilename(file));
@@ -95,14 +97,14 @@ public class SourceTab extends GrrTab<Layout> implements SerializableTab {
           } else append.run();
         } else {
           code.setLang(g.gc.langs().defLang);
-          noteNoFile(file, fullFile, line, bin);
+          noteNoFile(file, sourceInfo, line, bin);
         }
       } else {
         code.setLang(g.gc.langs().defLang);
         code.append("(no attached file"+(bin==null? "" : " for "+bin) + ")");
         code.um.clear();
       }
-      currFilename = fullFile;
+      currFilename = file;
     }
     nameUpdated();
   }
