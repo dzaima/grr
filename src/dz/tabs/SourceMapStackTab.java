@@ -2,7 +2,7 @@ package dz.tabs;
 
 import dz.debugger.Location;
 import dz.general.DisasFn;
-import dz.layouts.*;
+import dz.layouts.GdbLayout;
 import dz.ui.SelectableEntry;
 import dz.utils.LocationUtils;
 import dzaima.ui.node.Node;

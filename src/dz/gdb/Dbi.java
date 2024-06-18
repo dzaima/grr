@@ -302,7 +302,7 @@ public class Dbi {
       String curr = prefix;
       boolean bad = false;
       if (badPrefix!=null && match.startsWith(badPrefix)) {
-        Log.info("lightweight checkpoints not supported; deleting");
+        Log.info("grr", "lightweight checkpoints not supported; deleting");
         supportsLWCP = false;
         curr = badPrefix;
         bad = true;

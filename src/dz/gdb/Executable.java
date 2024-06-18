@@ -178,7 +178,7 @@ public class Executable {
       Location[] ls = new Location[addrs.length];
       
       if (r==null || !r.startsWith("{")) {
-        Log.warn("Failed to get symbols");
+        Log.warn("grr", "Failed to get symbols");
         Arrays.fill(ls, Location.IDK);
         return;
       }

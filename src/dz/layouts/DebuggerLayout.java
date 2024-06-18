@@ -7,7 +7,7 @@ import dz.general.*;
 import dz.general.arch.Arch;
 import dz.tabs.*;
 import dz.ui.SearchPopup;
-import dz.utils.*;
+import dz.utils.DelayedRun;
 import dzaima.ui.gui.Popup;
 import dzaima.ui.gui.io.*;
 import dzaima.ui.node.Node;

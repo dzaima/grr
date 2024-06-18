@@ -3,7 +3,6 @@ package dz.tabs;
 import dz.debugger.*;
 import dz.gdb.*;
 import dz.layouts.*;
-import dz.utils.Promise;
 import dzaima.ui.node.Node;
 import dzaima.ui.node.prop.Prop;
 import dzaima.ui.node.types.*;

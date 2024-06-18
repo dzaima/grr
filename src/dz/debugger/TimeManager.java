@@ -2,7 +2,6 @@ package dz.debugger;
 
 import dz.debugger.StateManager.OnResolved;
 import dz.gdb.RRDump;
-import dz.utils.Promise;
 import dzaima.utils.*;
 
 import java.util.*;
@@ -203,7 +202,7 @@ public class TimeManager {
           }
           if (!noCompareCheckpoints) {
             noCompareCheckpoints = true;
-            Log.info("No compare-checkpoint");
+            Log.info("grr", "No compare-checkpoint");
           }
           for (int i = 0; i < ss.sz; i++) v.add(1);
           got.accept(v);

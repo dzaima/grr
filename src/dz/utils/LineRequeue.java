@@ -1,6 +1,6 @@
 package dz.utils;
 
-import dzaima.utils.*;
+import dzaima.utils.ByteVec;
 
 import java.io.*;
 import java.nio.file.*;

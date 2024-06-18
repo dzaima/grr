@@ -9,7 +9,7 @@ import dz.ui.SelectableEntry.CT;
 import dz.utils.*;
 import dzaima.ui.node.Node;
 import dzaima.ui.node.types.tabs.SerializableTab;
-import dzaima.utils.Vec;
+import dzaima.utils.*;
 
 public class StackTab extends GrrTab<DebuggerLayout> implements SerializableTab {
   public final Node node, list;

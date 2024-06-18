@@ -2,7 +2,7 @@ package dz.general.file;
 
 import dzaima.utils.Vec;
 
-import java.util.*;
+import java.util.Comparator;
 import java.util.function.LongConsumer;
 
 import static dz.general.file.Elf.*;

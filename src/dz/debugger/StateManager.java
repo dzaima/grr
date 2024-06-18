@@ -1,8 +1,7 @@
 package dz.debugger;
 
 import dz.gdb.*;
-import dz.utils.Promise;
-import dzaima.utils.Vec;
+import dzaima.utils.*;
 
 import java.util.HashMap;
 

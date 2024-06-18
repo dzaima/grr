@@ -2,7 +2,6 @@ package dz.debugger;
 
 import dz.gdb.*;
 import dz.gdb.Executable.ThreadState;
-import dz.utils.Promise;
 import dzaima.utils.*;
 
 import java.time.Instant;

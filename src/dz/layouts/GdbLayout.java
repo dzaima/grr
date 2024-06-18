@@ -8,12 +8,12 @@ import dz.general.*;
 import dz.general.arch.*;
 import dz.stat.*;
 import dz.general.java.JavaPrintAssembly;
+import dz.stat.*;
 import dz.stat.perf.PerfStat;
 import dz.stat.valgrind.CachegrindData;
 import dz.tabs.*;
 import dz.tabs.GdbTab.Mode;
 import dz.ui.AsmListNode;
-import dz.utils.Promise;
 import dzaima.ui.node.Node;
 import dzaima.ui.node.prop.Prop;
 import dzaima.ui.node.types.tabs.*;
@@ -21,7 +21,7 @@ import dzaima.utils.*;
 import dzaima.utils.options.*;
 
 import java.nio.file.*;
-import java.util.*;
+import java.util.HashMap;
 import java.util.function.*;
 
 public abstract class GdbLayout extends Layout {

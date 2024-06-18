@@ -249,7 +249,7 @@ public class MemoryTab extends GrrTab<DebuggerLayout> implements SerializableTab
           }
         }
         if (defVals==null || defVals.sz!=e-s) {
-          Log.warn("bad monitor xb result");
+          Log.warn("grr valgrind", "bad monitor xb result");
         } else {
           for (int i = 0; i < meta.length; i++) {
             meta[i] = (short) ((meta[i]&0x8000) | 0x4000 | ((~defVals.get(i))&0xff));
