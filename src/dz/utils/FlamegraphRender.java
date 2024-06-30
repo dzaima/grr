@@ -180,7 +180,7 @@ public class FlamegraphRender {
       return new MChs(e.getKey(), mch, d);
     });
     // es.sort(Comparator.comparing(c -> -c.t));
-    es.sort(Comparator.comparing(c -> c.sym)); // sorting by duration or first occurrence means weird things on scrolling loading samples in/out 
+    es.sort(Comparator.comparing(c -> c.sym==null? "??" : c.sym)); // sorting by duration or first occurrence means weird things on scrolling loading samples in/out
     ch.clear();
     
     es.forEach((e) -> {
