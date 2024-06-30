@@ -110,10 +110,12 @@ public class JavaPrintAssembly {
       Vec<DisasFn.SourceMap> cmap = null;
       long addr0 = -1;
       long caddr = -1;
+      int lineNum = 0;
       for (byte[] l0 : LineRequeue.iterable(p)) {
+        lineNum++;
         String l = new String(l0, StandardCharsets.UTF_8);
         if (mode!=2) {
-          if (l.equals("----------------------------------- Assembly -----------------------------------") || l.startsWith("Compiled method (n/a)")) {
+          if (l.equals("----------------------------------- Assembly -----------------------------------") || l.startsWith("Compiled method (")) {
             name = "??";
             comp = "NA";
             mode = 1;
@@ -142,7 +144,9 @@ public class JavaPrintAssembly {
           int i = l.indexOf(':');
           long addr = Long.parseUnsignedLong(l.substring(0,i), 16);
           if (addr0==-1) addr0 = caddr = addr;
-          assert caddr == addr : "expected to be at "+addr+", was at "+caddr;
+          if (caddr!=addr) {
+            throw new RuntimeException("Line "+lineNum+" in "+p+": data notated as at 0x"+Long.toHexString(addr)+", but should be at 0x"+Long.toHexString(caddr));
+          }
           
           int j = l.indexOf(';', i);
           if (j==-1) j = l.length();
