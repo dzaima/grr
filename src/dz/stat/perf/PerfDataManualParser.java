@@ -24,7 +24,7 @@ public class PerfDataManualParser extends ByteReader {
     }
   }
   
-  public static final boolean DEBUG_PARSER = false;
+  private static final boolean DEBUG_PARSER = false;
   
   public static final int PERF_RECORD_MMAP = 1;
   public static final int PERF_RECORD_MUNMAP = 2;
@@ -56,6 +56,15 @@ public class PerfDataManualParser extends ByteReader {
   public static final long PERF_SAMPLE_DATA_PAGE_SIZE = 1<<22;
   public static final long PERF_SAMPLE_CODE_PAGE_SIZE = 1<<23;
   public static final long PERF_SAMPLE_WEIGHT_STRUCT  = 1<<24;
+  
+  public static final long PERF_SAMPLE_BRANCH_HW       = 1<<17;
+  public static final long PERF_SAMPLE_BRANCH_COUNTERS = 1<<19;
+  
+  public static final long PERF_FORMAT_TOTAL_TIME_ENABLED = 1<<0;
+  public static final long PERF_FORMAT_TOTAL_TIME_RUNNING = 1<<1;
+  public static final long PERF_FORMAT_ID                 = 1<<2;
+  public static final long PERF_FORMAT_GROUP              = 1<<3;
+  public static final long PERF_FORMAT_LOST               = 1<<4;
   
   private PerfDataManualParser() { }
   
@@ -167,10 +176,60 @@ public class PerfDataManualParser extends ByteReader {
         if (a.sample_has(PERF_SAMPLE_STREAM_ID))  { u64();                } // stream_id
         if (a.sample_has(PERF_SAMPLE_CPU))        { u32(); u32();         } // cpu; res
         if (a.sample_has(PERF_SAMPLE_PERIOD))     { u64();                } // period
+        if (a.sample_has(PERF_SAMPLE_READ)) { // struct read_format
+          boolean group = a.format_has(PERF_FORMAT_GROUP);
+          long nr = group? u64() : 1;
+          if (!group) u64(); // value
+          if (a.format_has(PERF_FORMAT_TOTAL_TIME_ENABLED)) u64();
+          if (a.format_has(PERF_FORMAT_TOTAL_TIME_RUNNING)) u64();
+          for (int i = 0; i < nr; i++) {
+            if (group) u64();
+            if (a.format_has(PERF_FORMAT_ID))   u64();
+            if (a.format_has(PERF_FORMAT_LOST)) u64();
+          }
+        }
+        if (a.sample_has(PERF_SAMPLE_CALLCHAIN)) {
+          long nr = u64();
+          for (int i = 0; i < nr; i++) u64(); // ips
+        }
+        if (a.sample_has(PERF_SAMPLE_RAW)) { skip((int) u64()); }
+        if (a.sample_has(PERF_SAMPLE_BRANCH_STACK)) {
+          long nr = u64();
+          System.out.println(nr);
+          if (a.branch_sample_type_has(PERF_SAMPLE_BRANCH_HW)) u64(); // hw_idx
+          for (int i = 0; i < nr; i++) { u64(); u64(); u64(); } // lbr: from, to, flags
+          if (a.branch_sample_type_has(PERF_SAMPLE_BRANCH_COUNTERS)) for (int i = 0; i < nr; i++) u64(); // counters
+        }
+        if (a.sample_has(PERF_SAMPLE_REGS_USER)) {
+          u64(); // abi - enum perf_sample_regs_abi
+          int n = Long.bitCount(a.sample_regs_user);
+          for (int i = 0; i < n; i++) u64();
+        }
+        if (a.sample_has(PERF_SAMPLE_STACK_USER)) {
+          long sz = u64();
+          for (int i = 0; i < sz; i++) u64(); // data
+          u64(); // dyn_size
+        }
+        if (a.sample_has(PERF_SAMPLE_WEIGHT)) {
+          u64(); // u32,u16,u16 give or take endianness
+        }
+        if (a.sample_has(PERF_SAMPLE_DATA_SRC)) { u64(); }
+        if (a.sample_has(PERF_SAMPLE_TRANSACTION)) { u64(); }
+        if (a.sample_has(PERF_SAMPLE_REGS_INTR)) {
+          u64(); // abi - enum perf_sample_regs_abi
+          int n = Long.bitCount(a.sample_regs_intr);
+          for (int i = 0; i < n; i++) u64();
+        }
+        if (a.sample_has(PERF_SAMPLE_PHYS_ADDR)) { u64(); }
+        if (a.sample_has(PERF_SAMPLE_AUX)) { skip((int) u64()); }
+        if (a.sample_has(PERF_SAMPLE_DATA_PAGE_SIZE)) u64();
+        if (a.sample_has(PERF_SAMPLE_CODE_PAGE_SIZE)) u64();
+        // System.out.println("used "+(getPos()-pos0)+" bytes out of "+size+"-byte sample");
         evts.add(new SampleEvt(ts, pid, tid, ip));
       } else {
         if (DEBUG_PARSER) System.out.println("unk @ "+pos0+": "+type+" / "+misc+" / "+size);
       }
+      assert getPos() <= pos0+size;
       setPos(pos0 + size);
     }
     
@@ -311,6 +370,12 @@ public class PerfDataManualParser extends ByteReader {
     
     public boolean sample_has(long prop) {
       return (sample_type&prop)!=0;
+    }
+    public boolean format_has(long prop) {
+      return (read_format&prop)!=0;
+    }
+    public boolean branch_sample_type_has(long prop) {
+      return (branch_sample_type&prop)!=0;
     }
   }
 }
