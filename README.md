@@ -139,5 +139,5 @@ The `hsdis` plugin must not be installed, as with it OpenJDK disassembles the ma
 ### Known issues
 
 - I/O with the running program is clunky (`--tty inherit` may be preferable).
-- Not all failure cases are properly handled and may result in Java stacktraces being printed; additionally in some scenarios the connection to GDB/MI "desynchronizes" and will cease functioning until the app is restarted.
-- Demangled symbols don't work in some places.
+- Not all failure cases are properly handled and may result in Java stacktraces being printed; additionally in some scenarios the connection to GDB/MI "desynchronizes" and will cease functioning until the app is restarted. Running `grr assume-break` in the "raw gdb" tab may or may not fix this.
+- Handling of demangling (be it in displaying or taking as input) is inconsistent.
