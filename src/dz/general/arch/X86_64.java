@@ -188,8 +188,8 @@ public class X86_64 extends Arch {
           int l1 = r1.bytes.length;
           int l2 = r2.bytes.length;
           byte[] nb = new byte[l1+l2];
-          System.arraycopy(r1.bytes, 0, nb, 0, l1);
-          System.arraycopy(r2.bytes, 0, nb, l1, l2);
+          System.arraycopy(r1.bytes, 0, nb, l1, l2);
+          System.arraycopy(r2.bytes, 0, nb, 0, l1);
           return new RegRes(r1.raw+" + "+r2.raw, nb, nb.length*8);
         }
         
