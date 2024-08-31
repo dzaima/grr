@@ -14,7 +14,7 @@ import java.util.*;
 public class FlamegraphRender {
   final TimelineManagerTab tm;
   final Location high, fail, self;
-  private static final ProcThread.StackFrame unkFrame = new ProcThread.StackFrame(0, new Location(0L, "??", null, null, null), false);
+  private static final ProcThread.StackFrame unkFrame = new ProcThread.StackFrame(0, new Location(0L, null, null, null, null), false);
   final int b; // border size
   final GConfig gc;
   final TimelineTab.TimelineNode n;
@@ -59,7 +59,7 @@ public class FlamegraphRender {
   }
   
   private boolean eqLoc(Location a, Location b) {
-    return a.sym.equals(b.sym);
+    return Objects.equals(a.sym, b.sym);
   }
   
   public FlamegraphRender calc(long tid, double g0, double g1, double v0, double v1) {
@@ -144,7 +144,8 @@ public class FlamegraphRender {
       }
       
       for (int i = c; i < rev.length; i++) {
-        push(new FlameStack(T_REG, rev[i].l, time));
+        Location l = rev[i].l;
+        push(new FlameStack(l.sym==null? T_BAD : T_REG, l, time));
       }
     }
     for (int i = stack.sz; i > 0; i--) pop(local? s1 : t0);
@@ -283,6 +284,7 @@ public class FlamegraphRender {
     int x1 = (int) x1f;
     
     String sym = f.l.sym;
+    if (sym == null) sym = "??";
     int yE = yS + eh;
     boolean bad = isBad(f.l);
     if (yE > y0 || bad || (pre!=null && pre.sz>=preMax)) {
