@@ -20,6 +20,7 @@ import java.util.*;
 
 public class Main extends NodeWindow {
   public Layout ly;
+  public static final Path LOCAL_CFG = Paths.get("local.dzcfg");
   
   public Main(GConfig gc, Ctx pctx, PNodeGroup g) {
     super(gc, pctx, g, new WindowInit("grr"));
@@ -138,6 +139,10 @@ public class Main extends NodeWindow {
       
       GConfig gc = GConfig.newConfig(gc0 -> {
         gc0.addCfg(() -> Tools.readRes("grr.dzcfg"));
+        gc0.addCfg(() -> {
+          if (Files.exists(LOCAL_CFG)) return Tools.readFile(LOCAL_CFG);
+          return "";
+        });
       });
       BaseCtx ctx = Ctx.newCtx();
       ctx.put("liveTextfield", LiveTextFieldNode::new);
