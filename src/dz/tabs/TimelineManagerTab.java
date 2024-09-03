@@ -60,67 +60,84 @@ public class TimelineManagerTab extends GrrTab<GdbLayout> implements Serializabl
     
     if (g instanceof DebuggerLayout) {
       DebuggerLayout gd = (DebuggerLayout) g;
-      Runnable clear = () -> {
-        samples.clear();
-        samplesTimesOrig.clear();
-        sampledTicks.clear();
-        sampleCSet.clear();
-      };
-      ((BtnNode) node.ctx.id("clear")).setFn(c -> clear.run());
+      ((BtnNode) node.ctx.id("clear")).setFn(c -> clearSamples());
       
-      BtnNode run = (BtnNode) node.ctx.id("run");
-      Runnable toggleRunning = () -> {
-        gd.loadRRDump(r -> {});
-        if (!sampling && !gd.readyForExec() || !gd.rrDump.isResolved()) return;
-        
-        boolean toSample = !sampling;
-        if (toSample) {
-          stateToRestore = gd.mainState;
-          if (!stateToRestore.getLWCP(i -> {})) return;
-          gd.atMainState = false;
-          gd.ignoreStateUpdates = true;
-          gd.mainState.requestable = false;
-          
-          if (sampledTid != tidToSample) clear.run();
-          sampledTid = tidToSample;
-          
-          gd.disableInternalLog = true;
-          prevState = stateToRestore;
-          perRequest = mode.perReq;
-          gd.addRawOut("(logging disabled during sampling)\n");
-        } else {
-          gd.d.p.consoleCmd("p 1").run(r -> { // ensure not running, intentionally no .ds()
-            gd.disableInternalLog = false;
-            gd.ignoreStateUpdates = false;
-            gd.mainState = stateToRestore;
-            Integer num = gd.mainState._lwcp.get();
-            if (num==null) {
-              gd.atMainState = true; // no lwcp support
-            } else gd.d.curr.toCheckpoint(num, () -> {
-              gd.atMainState = true;
-              gd.mainState.requestable = true;
-            });
-          });
-        }
-        sampling = toSample;
-        run.replace(0, new StringNode(ctx, ctx.gc.getProp(sampling? "grr.tabs.timelineManager.runBtnOn" : "grr.tabs.timelineManager.runBtnOff").str()));
-      };
-      run.setFn(b -> {
+      BtnNode runBtn = (BtnNode) node.ctx.id("run");
+      runBtn.setFn(b -> {
         if (mode == SampleMode.TICKS) {
           if (quickSeekSupported==null) quickSeekSupported = Promise.create(p -> {
             g.d.p.consoleCmd("help quick-seek-ticks").ds().run(r -> p.set(r.type.ok()));
           });
-          quickSeekSupported.then(ok -> g.runLater.add(toggleRunning));
+          quickSeekSupported.then(ok -> g.runLater.add(() -> toggleRunning(runBtn, gd)));
         } else {
-          toggleRunning.run();
+          toggleRunning(runBtn, gd);
         }
-        
       });
       EditNode resC = (EditNode) node.ctx.id("resolutionCoarse");
       resC.append("50");
       EditNode resF = (EditNode) node.ctx.id("resolutionFine");
       resF.append("300");
     }
+  }
+  
+  private void clearSamples() {
+    samples.clear();
+    samplesTimesOrig.clear();
+    sampledTicks.clear();
+    sampleCSet.clear();
+  }
+  
+  private void toggleRunning(BtnNode runBtn, DebuggerLayout gd) {
+    gd.loadRRDump(r -> {});
+    if (!sampling && !gd.readyForExec() || !gd.rrDump.isResolved()) return;
+    
+    boolean toSample = !sampling;
+    if (toSample) {
+      stateToRestore = gd.mainState;
+      prepForSampling(quickSeekSupported.get(), () -> {
+        gd.atMainState = false;
+        gd.ignoreStateUpdates = true;
+        gd.mainState.requestable = false;
+        
+        if (sampledTid != tidToSample) clearSamples();
+        sampledTid = tidToSample;
+        
+        gd.disableInternalLog = true;
+        prevState = stateToRestore;
+        perRequest = mode.perReq;
+        gd.addRawOut("(logging disabled during sampling)\n");
+      });
+    } else {
+      gd.d.p.consoleCmd("p 1").run(r -> { // ensure not running, intentionally no .ds()
+        gd.disableInternalLog = false;
+        gd.ignoreStateUpdates = false;
+        Integer num = gd.mainState._lwcp.get();
+        if (num==null) {
+          gd.atMainState = true; // no lwcp support
+          gd.refreshMainState();
+        } else gd.d.curr.toCheckpoint(num, () -> {
+          gd.mainState = stateToRestore;
+          gd.atMainState = true;
+          gd.mainState.requestable = true;
+        });
+      });
+    }
+    sampling = toSample;
+    runBtn.replace(0, new StringNode(ctx, ctx.gc.getProp(sampling? "grr.tabs.timelineManager.runBtnOn" : "grr.tabs.timelineManager.runBtnOff").str()));
+  }
+  private void prepForSampling(boolean tryStepBack, Runnable start) {
+    Box<Boolean> ok = new Box<>(true);
+    Promise<Integer> pLWCP = Promise.create(r -> { if (!stateToRestore.getLWCP(r::set)) ok.set(false); });
+    Promise<TimeManager.TickRef> pWhen = Promise.create(r -> { if (!stateToRestore.currThreadWhen(r::set)) ok.set(false); });
+    if (!ok.get()) return;
+    Promise.run2(pLWCP, pWhen, (lwcp, when) -> {
+      if (tryStepBack && lwcp==null && when!=null) { // at rr's in_debuggee_end_state where checkpoints don't function
+        g.d.curr.stepIns(-1, null);
+        prepForSampling(false, start);
+      } else {
+        start.run();
+      }
+    });
   }
   
   private double resolution(boolean coarse) {

@@ -313,7 +313,10 @@ public class Dbi {
       while (GdbFormat.dig(match.charAt(i))) i++;
       Integer num = i==0? null : Integer.parseInt(match.substring(0, i));
       
-      if (num!=null && bad) _rmCheckpoint(num, null);
+      if (num!=null && bad) {
+        _rmCheckpoint(num, null);
+        num = null;
+      }
       got.accept(num);
     }, s -> s.startsWith(prefix) || (badPrefix!=null && s.startsWith(badPrefix)));
   }

@@ -54,7 +54,7 @@ public class Executable {
     d._selectThread(thr, after);
   }
   
-  public void addLWCP(Consumer<Integer> got) { assertThis();
+  public void addLWCP(Consumer<Integer> got) { assertThis(); // may resolve to null
     d._addLWCP(got);
   }
   

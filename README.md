@@ -69,7 +69,11 @@ Note that, while the timeline window shows time as seconds, it's actually just i
 
 The "timeline manager" tab allows sampling stacktraces and building a flamegraph out of that - "ticks" mode will sample in the visible interval spaced at the specified resolutions, "stepi" and "continue" will sample running the specified action from the intial position. It is suggested to start from a position at or after the desired sampling interval, otherwise gdb may not pick up the necessary libraries and fail to symbolize.
 
-While mainline rr works, [this fork](https://github.com/dzaima/rr/tree/lightweight-checkpoint) provides additional features, including precise ordering of instruction-level samples on the timeline, the ability to jump to previously visited locations, and much faster ticks-based sampling.
+While mainline rr works, [this fork](https://github.com/dzaima/rr/tree/lightweight-checkpoint) provides additional features:
+
+- instruction-precise ordering of visited spots/samples on the timeline;
+- the ability to jump exactly to any previously-visited location;
+- much faster ticks-based sampling (as in, ~100 samples/second instead of ~3). Note that, for the faster sampling to properly symbolize, you may need to manually seek beforehand to around the target range (end of recording should work too) for gdb to pick up dynamic libraries.
 
 `--rr` can be combined with `--perf`, `--cachegrind`, and `--jvm-out`.
 

@@ -400,7 +400,7 @@ grr {
           vl {
             "Show address:"
             grr.$labeledRadio { id=aDisp  for=aDisp t="never" }
-            grr.$labeledRadio { id=aDispK for=aDisp t="on known targets" }
+            grr.$labeledRadio { id=aDispK for=aDisp t="on likely targets" }
             grr.$labeledRadio { id=aDispA for=aDisp t="always" }
           }
           seph{ x=0.5em y=0.1em }

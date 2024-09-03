@@ -294,7 +294,9 @@ public class DebuggerLayout extends GdbLayout {
   }
   
   
-  
+  public void refreshMainState() {
+    stateChanged = true;
+  }
   boolean stateChanged = true;
   public Vec<Consumer<RecordedState>> onNextMainState = new Vec<>();
   public void tick() {

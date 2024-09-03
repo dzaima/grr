@@ -72,7 +72,9 @@ public class RecordedState {
   public void requestSpot() {
     if (spotRequested) return;
     spotRequested = true;
-    smgr.dump.then(d -> currThreadState(s -> smgr.forThread(d, s.tid).find(this))); // TODO if this fails, _spot.then will leak, like, a lot
+    smgr.dump.then(d -> currThreadState(s -> { // TODO if this fails, _spot.then will leak, like, a lot
+      if (s!=null) smgr.forThread(d, s.tid).find(this);
+    }));
   }
   public boolean spot(Consumer<TimeManager.Spot> got) {
     requestSpot();
