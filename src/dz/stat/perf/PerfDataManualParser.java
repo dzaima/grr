@@ -167,6 +167,8 @@ public class PerfDataManualParser extends ByteReader {
       } else if (type == PERF_RECORD_SAMPLE) {
         long ip=0, ts=fakeTs++;
         long pid=0, tid=0;
+        // https://github.com/torvalds/linux/blob/420b2d431d18a2572c8e86579e78105cb5ed45b0/include/uapi/linux/perf_event.h#L940-L1019
+        // (but that has some inaccuracies, e.g. PERF_SAMPLE_STACK_USER's dyn_size isn't read if size==0)
         if (a.sample_has(PERF_SAMPLE_IDENTIFIER)) { u64();                } // id
         if (a.sample_has(PERF_SAMPLE_IP))         { ip=u64();             } // ip
         if (a.sample_has(PERF_SAMPLE_TID))        { pid=u32(); tid=u32(); } // pid; tid
@@ -201,14 +203,18 @@ public class PerfDataManualParser extends ByteReader {
           if (a.branch_sample_type_has(PERF_SAMPLE_BRANCH_COUNTERS)) for (int i = 0; i < nr; i++) u64(); // counters
         }
         if (a.sample_has(PERF_SAMPLE_REGS_USER)) {
-          u64(); // abi - enum perf_sample_regs_abi
-          int n = Long.bitCount(a.sample_regs_user);
-          for (int i = 0; i < n; i++) u64();
+          long abi = u64(); // abi - enum perf_sample_regs_abi
+          if (abi != 0) {
+            int n = Long.bitCount(a.sample_regs_user);
+            for (int i = 0; i < n; i++) u64();
+          }
         }
         if (a.sample_has(PERF_SAMPLE_STACK_USER)) {
           long sz = u64();
-          for (int i = 0; i < sz; i++) u64(); // data
-          u64(); // dyn_size
+          if (sz!=0) {
+            for (int i = 0; i < sz; i++) u8(); // data
+            long dyn_size = u64(); // dyn_size
+          }
         }
         if (a.sample_has(PERF_SAMPLE_WEIGHT)) {
           u64(); // u32,u16,u16 give or take endianness
@@ -229,7 +235,8 @@ public class PerfDataManualParser extends ByteReader {
       } else {
         if (DEBUG_PARSER) System.out.println("unk @ "+pos0+": "+type+" / "+misc+" / "+size);
       }
-      assert getPos() <= pos0+size;
+      
+      assert getPos() <= pos0+size : "Sample was marked as "+size+"B, but parser ended up reading "+(getPos()-pos0)+"B";
       setPos(pos0 + size);
     }
     
