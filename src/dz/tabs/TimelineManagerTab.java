@@ -94,7 +94,7 @@ public class TimelineManagerTab extends GrrTab<GdbLayout> implements Serializabl
     boolean toSample = !sampling;
     if (toSample) {
       stateToRestore = gd.mainState;
-      prepForSampling(quickSeekSupported.get(), () -> {
+      prepForSampling(mode == SampleMode.TICKS && quickSeekSupported.get(), () -> {
         gd.atMainState = false;
         gd.ignoreStateUpdates = true;
         gd.mainState.requestable = false;
