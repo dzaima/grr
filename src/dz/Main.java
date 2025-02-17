@@ -199,7 +199,7 @@ public class Main extends NodeWindow {
         Path dir = localDir();
         try { Files.createDirectories(dir); }
         catch (IOException e) { Log.stacktrace("create local/ directory for save", e); }
-        saveFile(null, dir.toAbsolutePath(), p -> {
+        saveFile(null, dir.toAbsolutePath(), "custom.dzcfg", p -> {
           if (p!=null) Tools.writeFile(p, s);
         });
         return true;
