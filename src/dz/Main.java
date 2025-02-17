@@ -140,7 +140,8 @@ public class Main extends NodeWindow {
       GConfig gc = GConfig.newConfig(gc0 -> {
         gc0.addCfg(() -> Tools.readRes("grr.dzcfg"));
         gc0.addCfg(() -> {
-          if (Files.exists(LOCAL_CFG)) return Tools.readFile(LOCAL_CFG);
+          Path path = Tools.RES_DIR.getParent().resolve(LOCAL_CFG);
+          if (Files.exists(path)) return Tools.readFile(path);
           return "";
         });
       });
