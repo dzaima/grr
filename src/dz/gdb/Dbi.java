@@ -244,7 +244,8 @@ public class Dbi {
   
   public void _disas(int ref, DisasMode mode, Object a, Long b, Consumer<Vec<Ins>> got) {
     Vec<String> os = new Vec<>();
-    os.add(ref==2? "-s" : "-a"); os.add(a instanceof String? "'"+a+"'" : a.toString());
+    // os.add(ref==2? "-s" : "-a"); os.add(a instanceof String? "'"+a+"'" : a.toString());
+    os.add(ref==2? "-s" : "-a"); os.add(a+"");
     if (ref==2) { os.add("-e"); os.add(b.toString()); }
     os.add(mode==DisasMode.SRC? "5" : "2");
     p.cmdList("-data-disassemble", os).ds().run(r -> {
