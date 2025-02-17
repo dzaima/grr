@@ -67,20 +67,29 @@ public class LineRequeue {
   
   
   public static Iterable<byte[]> iterable(Path p) { // no point
-    byte[] buf = new byte[32768];
     try {
       InputStream s = Files.newInputStream(p);
-      return iterable(l -> {
-        try {
-          int r = s.read(buf);
-          if (r<=0) {
-            s.close();
-            return false;
-          }
-          l.add(buf, 0, r);
-          return true;
-        } catch (IOException e) { throw new UncheckedIOException(e); }
-      });
+      return iterable(s, true);
     } catch (IOException e) { throw new UncheckedIOException(e); }
   }
+  
+  public static Iterable<byte[]> iterable(InputStream s) {
+    return iterable(s, false);
+  }
+  
+  private static Iterable<byte[]> iterable(InputStream s, boolean close) {
+    byte[] buf = new byte[32768];
+    return iterable(l -> {
+      try {
+        int r = s.read(buf);
+        if (r <= 0) {
+          if (close) s.close();
+          return false;
+        }
+        l.add(buf, 0, r);
+        return true;
+      } catch (IOException e) { throw new UncheckedIOException(e); }
+    });
+  }
+  
 }
