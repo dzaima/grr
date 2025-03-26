@@ -115,6 +115,7 @@ public class Main extends NodeWindow {
             break;
           case "-d": o.put("--no-run", i, "true"); o.put(arg, i, get.get()); break;
           case "-v": o.put("--no-run", i, "true"); break;
+          case "-c": o.put("--core",       i, get.get()); break;
           case "-f": o.put("--rr-fork",    i, get.get()); break;
           case "-p": o.put("--rr-process", i, get.get()); break;
           case "-x": o.put(arg, i, get.get()); break;
