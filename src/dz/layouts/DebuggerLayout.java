@@ -7,7 +7,7 @@ import dz.general.*;
 import dz.general.arch.Arch;
 import dz.tabs.*;
 import dz.ui.SearchPopup;
-import dz.utils.DelayedRun;
+import dz.utils.*;
 import dzaima.ui.gui.Popup;
 import dzaima.ui.gui.io.*;
 import dzaima.ui.node.Node;
@@ -18,7 +18,6 @@ import dzaima.utils.*;
 import dzaima.utils.options.Options;
 
 import java.nio.file.*;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.*;
 
@@ -280,7 +279,7 @@ public class DebuggerLayout extends GdbLayout {
   }
   
   public void addBreakpoint(boolean hw, boolean temp, boolean enabled, DisasFn.ParsedIns c, Runnable after) {
-    d.addBreakpoint(hw, temp, enabled, "*0x"+ DebuggerLayout.hexLong(c.s), after);
+    d.addBreakpoint(hw, temp, enabled, "*0x"+Utils.hexLong(c.s), after);
   }
   
   public void toStart() {
@@ -341,24 +340,8 @@ public class DebuggerLayout extends GdbLayout {
     getDisasDirect(frame, FnCache.NameMode.PREFIX, sourceInjector(res));
   }
   
-  public static String pad(String v, char s, int len) {
-    if (v.length()>=len) return v;
-    return Tools.repeat(s, len-v.length())+v;
-  }
-  public static String padL(String v, char s, int len) {
-    if (v.length()>=len) return v;
-    return v+Tools.repeat(s, len-v.length());
-  }
-  public static String hexLong(long l) { return hexLong(l, 16); }
-  public static String hexLong(long l, int len) {
-    return pad(Long.toUnsignedString(l, 16), '0', len);
-  }
-  public static int hexLength(long l) {
-    return Math.max(16 - Long.numberOfLeadingZeros(l)/4, 2);
-  }
-  
   private void setTime(double d) {
-    setTime(fmtSeconds(d));
+    setTime(Utils.fmtSeconds(d));
     forTabs(TimelineTab.class, c -> c.currTime(d));
   }
   private void setTime(String s) {
@@ -366,11 +349,4 @@ public class DebuggerLayout extends GdbLayout {
     toolbar.ctx.id("time").replace(0, new StringNode(node.ctx, s));
   }
   
-  private static final DecimalFormat f = new DecimalFormat("0.#########");
-  public static String fmtSeconds(double s) {
-    return f.format(s);
-  }
-  public static String fmtNanos(long ns) {
-    return fmtSeconds(ns/1e9);
-  }
 }

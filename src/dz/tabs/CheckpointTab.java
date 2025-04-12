@@ -3,7 +3,7 @@ package dz.tabs;
 import dz.debugger.RecordedState;
 import dz.layouts.DebuggerLayout;
 import dz.ui.SelectableEntry;
-import dz.utils.LocationUtils;
+import dz.utils.*;
 import dzaima.ui.gui.io.*;
 import dzaima.ui.node.Node;
 import dzaima.ui.node.types.BtnNode;
@@ -38,7 +38,7 @@ public class CheckpointTab extends GrrTab<DebuggerLayout> implements Serializabl
     g.d.curr.addCheckpoint(n -> {
       if (n==null) return;
       g.mainState.currThreadState(t -> t.obj.stacktrace(true, 0, 1, bt -> {
-        Node line = LocationUtils.node(ctx, DebuggerLayout.pad("#"+n, ' ', 2), bt.sz==0? DebuggerLayout.BAD_STACKFRAME : bt.get(0));
+        Node line = LocationUtils.node(ctx, Utils.pad("#"+n, ' ', 2), bt.sz==0? DebuggerLayout.BAD_STACKFRAME : bt.get(0));
         list.add(new CheckpointNode(line, this, n, g.mainState));
         g.checkpointsUpdated();
       }));

@@ -53,7 +53,7 @@ public class ThreadListTab extends GrrTab<DebuggerLayout> implements Serializabl
             if (did.charAt(i)<'0' || did.charAt(i)>'9') { allNum = false; break; }
           }
           if (allNum) did = "#"+did;
-          String name = DebuggerLayout.padL(did,' ',c1) + " " + DebuggerLayout.padL(thr.desc, ' ', c2);
+          String name = Utils.padL(did,' ',c1) + " " + Utils.padL(thr.desc, ' ', c2);
           ThreadItemNode n = new ThreadItemNode(LocationUtils.node(ctx, name, thr.frame), this, thr, thr.tid);
           list.add(n);
           if (thr.current) {

@@ -50,7 +50,7 @@ public class StackTab extends GrrTab<DebuggerLayout> implements SerializableTab 
         Location l2 = g.cachedJITLocation(f.l);
         if (l2!=null) f = new StackFrame(f.level, l2, f.afterCall);
       }
-      list.add(new StackFrameNode(LocationUtils.node(ctx, DebuggerLayout.pad("#"+f.level, ' ', 2), f), this, f));
+      list.add(new StackFrameNode(LocationUtils.node(ctx, Utils.pad("#"+f.level, ' ', 2), f), this, f));
     }
     if (curr==null || curr.sz==0) {
       g.selectFrame(null);

@@ -4,7 +4,7 @@ import dz.debugger.*;
 import dz.gdb.ProcThread;
 import dz.layouts.DebuggerLayout;
 import dz.ui.SelectableEntry;
-import dz.utils.LocationUtils;
+import dz.utils.*;
 import dzaima.ui.node.Node;
 import dzaima.ui.node.types.BtnNode;
 import dzaima.ui.node.types.tabs.SerializableTab;
@@ -46,7 +46,7 @@ public class PastTab extends GrrTab<DebuggerLayout> implements SerializableTab {
     if (f==null) f = tryMap(st, st._fullStack);
     
     String time = Time.localNearTimeStr(st.visitTime);
-    if (st._elapsedTime!=null && st._elapsedTime.isResolved()) time = time+" "+DebuggerLayout.fmtNanos(st._elapsedTime.get());
+    if (st._elapsedTime!=null && st._elapsedTime.isResolved()) time = time+" "+Utils.fmtNanos(st._elapsedTime.get());
     
     if (f!=null) return LocationUtils.node(ctx, time, f);
     else return LocationUtils.node("grr.frame.all", ctx, time, Location.IDK, null);

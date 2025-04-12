@@ -4,6 +4,7 @@ import dz.gdb.GdbFormat.GVal;
 import dz.general.arch.Arch;
 import dz.layouts.DebuggerLayout;
 import dz.ui.SelectableEntry;
+import dz.utils.Utils;
 import dzaima.ui.eval.PNodeGroup;
 import dzaima.ui.gui.io.*;
 import dzaima.ui.node.Node;
@@ -60,7 +61,7 @@ public class RegisterTab extends GrrTab<DebuggerLayout> implements SerializableT
   }
   
   private void updateRegs() {
-    if (registers ==null) {
+    if (registers==null) {
       list.clearCh();
       return;
     }
@@ -86,7 +87,7 @@ public class RegisterTab extends GrrTab<DebuggerLayout> implements SerializableT
       Props colU = Props.of("color", ctx.gc.getCfgProp("grr.colors.valUndefined"));
       
       for (Arch.RegInfo c : shown) {
-        String name = DebuggerLayout.padL(c.name, ' ', c.namePad());
+        String name = Utils.padL(c.name, ' ', c.namePad());
         Node v = ctx.make(reg);
         
         v.ctx.id("name").add(new StringNode(ctx, name));

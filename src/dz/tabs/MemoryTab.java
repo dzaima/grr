@@ -72,7 +72,7 @@ public class MemoryTab extends GrrTab<DebuggerLayout> implements SerializableTab
       addr = addr/width * width;
       int len = (h/f.hi + 1)*width;
       if (len==0) return;
-      int lzHex = DebuggerLayout.hexLength(addr+len);
+      int lzHex = Utils.hexLength(addr+len);
       lzHex = Math.max(lzHex, 6);
       
       g.push();
@@ -114,7 +114,7 @@ public class MemoryTab extends GrrTab<DebuggerLayout> implements SerializableTab
           }
         }
         ColText all = new ColText();
-        String addrS = DebuggerLayout.hexLong(i+addr);
+        String addrS = Utils.hexLong(i+addr);
         int[] cols = new int[]{col, 0,
           gc.getProp("grr.colors.valDefined").col(),
           gc.getProp("grr.colors.valHalfDefined").col(),

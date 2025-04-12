@@ -2,8 +2,8 @@ package dz.ui;
 
 import dz.general.DisasFn;
 import dz.general.arch.Arch;
-import dz.layouts.DebuggerLayout;
 import dz.stat.*;
+import dz.utils.Utils;
 import dzaima.ui.gui.*;
 import dzaima.ui.gui.io.*;
 import dzaima.ui.gui.select.Selection;
@@ -144,7 +144,7 @@ public abstract class AsmListNode extends Node implements SelectableListManager.
     }
     
     
-    addrLen = Math.max(DebuggerLayout.hexLength(fn.e), 4);
+    addrLen = Math.max(Utils.hexLength(fn.e), 4);
     
     leftW = Tools.ceil(cW*3); // arrows
     
@@ -307,7 +307,7 @@ public abstract class AsmListNode extends Node implements SelectableListManager.
           // fallthrough
         case ALL:
           switch (asmConfig().fmt) { default: throw new RuntimeException();
-            case ADDR: addr = DebuggerLayout.hexLong(ins.s, addrLen); break;
+            case ADDR: addr = Utils.hexLong(ins.s, addrLen); break;
             case DEC_OFF:  addr = "+" + (ins.s-fn.s); break;
             case HEX_OFF:  addr = Long.toHexString(ins.s-fn.s); break;
           }

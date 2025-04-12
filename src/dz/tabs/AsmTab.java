@@ -7,6 +7,7 @@ import dz.general.arch.Arch;
 import dz.layouts.*;
 import dz.stat.*;
 import dz.ui.*;
+import dz.utils.Utils;
 import dzaima.ui.gui.*;
 import dzaima.ui.gui.io.*;
 import dzaima.ui.node.Node;
@@ -104,7 +105,7 @@ public class AsmTab extends GrrTab<GdbLayout> implements SerializableTab {
     asmList.setFn(fn, stat);
     overlay.setFn(fn, stat);
     if (fn==null) setFnName(null);
-    else setFnName("??".equals(fn.name)? "0x"+DebuggerLayout.hexLong(fn.s) : fn.name);
+    else setFnName("??".equals(fn.name)? "0x"+Utils.hexLong(fn.s) : fn.name);
   }
   
   public void onRegHover(Arch.RegInfo reg, boolean enable) {

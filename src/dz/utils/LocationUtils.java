@@ -2,7 +2,6 @@ package dz.utils;
 
 import dz.debugger.Location;
 import dz.gdb.*;
-import dz.layouts.DebuggerLayout;
 import dzaima.ui.eval.PNodeGroup;
 import dzaima.ui.gui.config.GConfig;
 import dzaima.ui.node.Node;
@@ -30,7 +29,7 @@ public class LocationUtils {
     if (cn!=null) cn.add(new StringNode(ctx, prefix==null || prefix.isEmpty()? "" : prefix+" "));
     
     cn = n.ctx.idNullable("addr");
-    if (cn!=null) cn.add(new StringNode(ctx, l.addr==null? "0x??" : "0x"+ DebuggerLayout.hexLong(l.addr)));
+    if (cn!=null) cn.add(new StringNode(ctx, l.addr==null? "0x??" : "0x"+Utils.hexLong(l.addr)));
     
     n.ctx.id("func").add(new StringNode(ctx, l.sym==null? "??" : l.sym));
     
