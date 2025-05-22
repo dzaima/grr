@@ -15,6 +15,7 @@ public class AddrMapper<T extends AddrMapper.Range> {
     public boolean equals(Object o) { return o instanceof ULong && l == ((ULong) o).l; }
     public int hashCode() { return Long.hashCode(l); }
     public int compareTo(ULong o) { return Long.compareUnsigned(l, o.l); }
+    public String toString() { return "0x"+Long.toHexString(l); }
   }
   private final NavigableMap<ULong, T> ranges = new TreeMap<>();
   
@@ -24,9 +25,9 @@ public class AddrMapper<T extends AddrMapper.Range> {
     T prev = ranges.put(new ULong(r.e()), r);
     assert prev==null;
   }
-  public void overrideRange(T r) {
-    for (T c : findRanges(r.s(), r.e())) remove(c); // TODO only truncate range somehow
-    addRange(r);
+  public void overrideRangeDangerous(T n) {
+    for (T c : findRanges(n.s(), n.e())) remove(c);
+    addRange(n);
   }
   public T find(long addr) {
     Map.Entry<ULong, T> c = ranges.higherEntry(new ULong(addr));

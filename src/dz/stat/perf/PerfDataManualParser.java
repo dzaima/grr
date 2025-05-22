@@ -243,11 +243,11 @@ public class PerfDataManualParser extends ByteReader {
     // sort events, group by mapping
     evts.sort();
     
-    AddrMapper<Mapping> mappings = new AddrMapper<>();
-    AddrMapper<Mapping> fMaps = null;
+    OverlapMapper<Mapping> mappings = new OverlapMapper<>();
+    OverlapMapper<Mapping> fMaps = null;
     if (initMappings.sz > 0) {
-      fMaps = new AddrMapper<>();
-      for (Mapping m : initMappings) fMaps.overrideRange(m);
+      fMaps = new OverlapMapper<>();
+      for (Mapping m : initMappings) fMaps.addFullRange(m);
     }
     Mapping defaultBin = new Mapping(new Binary(null, "//unknown", false), 0, -1, 0);
     
@@ -256,12 +256,14 @@ public class PerfDataManualParser extends ByteReader {
     
     for (Evt c : evts) {
       if (c instanceof MmapEvt) {
-        mappings.overrideRange(((MmapEvt) c).b);
+        if (DEBUG_PARSER) System.out.println("["+c.ts+"] starting map "+((MmapEvt)c).b.bin.desc);
+        mappings.addFullRange(((MmapEvt) c).b);
       } else if (c instanceof SampleEvt) {
         SampleEvt s = (SampleEvt) c;
+        long ip = s.ip;
         
-        Mapping m = fMaps==null? null : fMaps.find(s.ip);
-        if (m==null) m = mappings.find(s.ip);
+        Mapping m = fMaps==null? null : fMaps.findBase(ip);
+        if (m==null) m = mappings.findBase(ip);
         
         if (m==null || "//anon".equals(m.bin.desc)) {
           OverlapMapper<Mapping> map = jitMapFns.computeIfAbsent(c.pid, pid -> {
@@ -269,10 +271,10 @@ public class PerfDataManualParser extends ByteReader {
             for (DisasFn f : l.loadJITMap(pid)) r.addFullRange(new Mapping(Binary.virtSym(f.name, f.name), f.s, f.e, 0));
             return r;
           });
-          m = map.findBase(((SampleEvt) c).ip);
+          m = map.findBase(ip);
           if (m==null || "//anon".equals(m.bin.desc)) m = defaultBin;
         }
-        if (DEBUG_PARSER) System.out.println("["+s.ts+"] sample @ "+Long.toHexString(s.ip)+": map="+m.bin.desc);
+        if (DEBUG_PARSER) System.out.println("["+c.ts+"] "+s.getClass().getSimpleName()+" @ "+Long.toHexString(ip)+": map="+m.bin.desc);
         perBin.computeIfAbsent(m.bin, k->new Vec<>()).add(new Pair<>(m, s));
       }
     }
