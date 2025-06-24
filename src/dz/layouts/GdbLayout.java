@@ -132,7 +132,7 @@ public abstract class GdbLayout extends Layout {
   public abstract void getDisas(Binary bin, Location frame, Consumer<DisasFn> res);
   
   
-  public final FnCache cache = new FnCache();
+  public final FnCache cache = new FnCache(); // TODO make per-binary
   public void getDisasDirect(Location l, FnCache.NameMode nameMode, Consumer<DisasFn> res) {
     cache.disas(-1, d, l, nameMode, res, d.isRR()); // TODO don't -1 if possible and get things working properly
   }

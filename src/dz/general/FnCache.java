@@ -91,4 +91,8 @@ public class FnCache {
     shouldCacheJIT = should;
     disasCache.removeAll();
   }
+  
+  public void clearDisas() {
+    disasCache.removeAll();
+  }
 }

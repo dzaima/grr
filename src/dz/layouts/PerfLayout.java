@@ -76,6 +76,7 @@ public class PerfLayout extends GdbLayout {
     if (path.endsWith(".map") && loadedMaps.add(path)) loadJITMap(-1, ff);
     if (!hasCore && (currFile==null || !currFile.p.equals(ff))) {
       currFile = d.makeExe(ff);
+      cache.clearDisas();
       d.toExe(currFile, b -> {
         if (!b) {
           Log.error("disas", "failed to open \""+currFile.p+"\" for disassembly");
