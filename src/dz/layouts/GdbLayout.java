@@ -234,7 +234,7 @@ public abstract class GdbLayout extends Layout {
   
   protected StackFrame fViewed, fGdb;
   public void runCommand(boolean full, String s) {
-    if (full && s.startsWith("grr ")) {
+    if (s.startsWith("grr ")) {
       icmdOut(s+"\n");
       try {
         s = s.substring(4);
