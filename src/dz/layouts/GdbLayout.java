@@ -23,6 +23,7 @@ import dzaima.utils.options.*;
 import java.nio.file.*;
 import java.util.HashMap;
 import java.util.function.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class GdbLayout extends Layout {
   public Dbi d;
@@ -97,9 +98,18 @@ public abstract class GdbLayout extends Layout {
   protected void layoutInit(Options o) {
     Vec<OptionItem> lx = o.optList("-x");
     Vec<OptionItem> li = o.optList("--icmd");
-    for (OptionItem c : OptionList.merge(lx, li)) {
-      runCommand(c.k.equals("--icmd"), c.v);
-    }
+    Vec<OptionItem> parts = OptionList.merge(lx, li);
+    AtomicInteger i = new AtomicInteger(0);
+    Box<Runnable> rbox = new Box<>();
+    Runnable r = () -> {
+      int ci = i.getAndIncrement();
+      if (ci < parts.size()) {
+        OptionItem c = parts.get(ci);
+        runCommand(c.k.equals("--icmd"), c.v, rbox.get());
+      }
+    };
+    rbox.set(r);
+    r.run();
   }
   
   private Promise<Arch.Registers> currArchRegs;
@@ -232,8 +242,9 @@ public abstract class GdbLayout extends Layout {
   
   
   protected StackFrame fViewed, fGdb;
-  public void runCommand(boolean full, String s) {
+  public void runCommand(boolean full, String s, Runnable after) {
     if (s.startsWith("grr ")) {
+      boolean customAfter = false;
       icmdOut(s+"\n");
       try {
         s = s.substring(4);
@@ -264,9 +275,11 @@ public abstract class GdbLayout extends Layout {
         }
         else if (s.startsWith("seek-time ")) {
           double t = Double.parseDouble(s.substring(10));
+          customAfter = true;
           d.getRRExe().listThreads(null, (threads) -> {
             Executable.ThreadState st = threads.linearFind(c -> c.current);
             if (st!=null) ((DebuggerLayout) this).seekToTime(st.tid, t);
+            after.run();
           });
         }
         else if (s.equals("assume-file")) {
@@ -283,20 +296,26 @@ public abstract class GdbLayout extends Layout {
         }
         else if (s.startsWith("start ")) {
           Executable e = d.makeExe(Paths.get(s.substring(6)));
+          customAfter = true;
           d.toExe(e, b -> {
-            if (!b) icmdOut("Failed to open file");
-            else e.open(new String[0], null);
+            if (b) {
+              e.open(new String[0], after);
+            } else {
+              icmdOut("Failed to open file");
+              after.run();
+            }
           });
         }
         else icmdOut("unknown grr command\n");
       } catch (Throwable e) { icmdOut("error: "+e.getClass().getName()+": "+e.getMessage()+"\n"); }
+      if (!customAfter) after.run();
     } else {
       if (fGdb != fViewed) {
         if (fViewed!=null) d.p.cmd("-stack-select-frame", fViewed.level).ds().run();
         fGdb = fViewed;
       }
-      if (full) d.p.cmd(s).run();
-      else d.p.cmd("-interpreter-exec", "console", s).run();
+      if (full) d.p.cmd(s).run(after);
+      else d.p.cmd("-interpreter-exec", "console", s).run(after);
     }
   }
   

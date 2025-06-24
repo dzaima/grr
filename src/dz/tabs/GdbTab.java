@@ -29,8 +29,8 @@ public class GdbTab extends GrrTab<GdbLayout> implements SerializableTab {
     input = (ReplFieldNode) node.ctx.id("input");
     input.onRun(s -> {
       switch (mode) {
-        case RAW: g.runCommand(true, s); break;
-        case DEBUGGER: append("  "+s+"\n"); g.runCommand(false, s); break;
+        case RAW: g.runCommand(true, s, ()->{}); break;
+        case DEBUGGER: append("  "+s+"\n"); g.runCommand(false, s, ()->{}); break;
         case PROCESS:
           String full = s+"\n";
           append(full);
