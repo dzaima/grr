@@ -98,8 +98,7 @@ public abstract class GdbLayout extends Layout {
     Vec<OptionItem> lx = o.optList("-x");
     Vec<OptionItem> li = o.optList("--icmd");
     for (OptionItem c : OptionList.merge(lx, li)) {
-      if (c.k.equals("-x")) d.p.consoleCmd(c.v).run();
-      else runCommand(true, c.v);
+      runCommand(c.k.equals("--icmd"), c.v);
     }
   }
   
