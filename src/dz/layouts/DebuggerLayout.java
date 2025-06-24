@@ -349,4 +349,7 @@ public class DebuggerLayout extends GdbLayout {
     toolbar.ctx.id("time").replace(0, new StringNode(node.ctx, s));
   }
   
+  public void seekToTime(long assumedTid, double time) {
+    d.toTicks(smgr.forThread(rrDump.get(), assumedTid).timeToTicks(time).ticks, null);
+  }
 }

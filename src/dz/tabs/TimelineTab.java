@@ -271,7 +271,7 @@ public class TimelineTab extends GrrTab<DebuggerLayout> implements SerializableT
         if (t.g.atPausedMainState() && t.g.d.isRR() && t.g.rrDump.isResolved()) {
           if (tst!=null) m.add("Go to approximate time", () -> {
             if (t.g.atPausedMainState()) t.g.d.getRRExe().selectThread(tst, (b) -> {
-              if (b && t.g.atPausedMainState()) t.g.d.toTicks(t.g.smgr.forThread(t.g.rrDump.get(), tid).timeToTicks(t0).ticks, null);
+              if (b && t.g.atPausedMainState()) t.g.seekToTime(tid, t0);
             });
           });
           
