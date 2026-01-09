@@ -349,7 +349,9 @@ public class DebuggerLayout extends GdbLayout {
     toolbar.ctx.id("time").replace(0, new StringNode(node.ctx, s));
   }
   
-  public void seekToTime(long assumedTid, double time) {
-    d.toTicks(smgr.forThread(rrDump.get(), assumedTid).timeToTicks(time).ticks, null);
+  public void seekToTime(long assumedTid, double time, boolean quick, Runnable after) {
+    long ticks = smgr.forThread(rrDump.get(), assumedTid).timeToTicks(time).ticks;
+    if (quick) d.toTicksQuick(ticks, (b) -> after.run());
+    else d.toTicks(ticks, after);
   }
 }

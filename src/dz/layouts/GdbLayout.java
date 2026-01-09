@@ -273,13 +273,14 @@ public abstract class GdbLayout extends Layout {
           Executable e = d.makeExe(Paths.get(s.substring(5)));
           d.toExe(e, b -> { if (!b) icmdOut("Failed to open file"); });
         }
-        else if (s.startsWith("seek-time ")) {
-          double t = Double.parseDouble(s.substring(10));
+        else if (s.startsWith("seek-time ") || s.startsWith("quick-seek-time ")) {
+          double t = Double.parseDouble(Tools.split(s,' ')[1]);
           customAfter = true;
+          boolean quick = s.startsWith("quick");
           d.getRRExe().listThreads(null, (threads) -> {
             Executable.ThreadState st = threads.linearFind(c -> c.current);
-            if (st!=null) ((DebuggerLayout) this).seekToTime(st.tid, t);
-            after.run();
+            if (st!=null) ((DebuggerLayout) this).seekToTime(st.tid, t, quick, after);
+            else after.run();
           });
         }
         else if (s.equals("assume-file")) {
