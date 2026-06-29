@@ -7,6 +7,7 @@ import dz.layouts.DebuggerLayout;
 import dz.utils.FlamegraphRender;
 import dzaima.ui.gui.*;
 import dzaima.ui.gui.io.Click;
+import dzaima.ui.gui.io.Key;
 import dzaima.ui.node.Node;
 import dzaima.ui.node.prop.Props;
 import dzaima.ui.node.types.tabs.SerializableTab;
@@ -291,15 +292,19 @@ public class TimelineTab extends GrrTab<DebuggerLayout> implements SerializableT
     int tdx, tdy, tly;
     public void mouseTick(int x, int y, Click c) {
       if (c.bC()) {
-        boolean dirDet = tdx >= gc.em*2 || tdy >= gc.em;
-        if (!dirDet) {
-          tdx+= Math.abs(c.dx);
-          tdy+= Math.abs(c.dy);
-        }
         double dt = c.dx*dv/w;
         v0-= dt;
         v1-= dt;
-        if (dirDet && tdy > tdx*0.5) tly = Math.max(tly-c.dy, 0);
+        if (Key.shift(c.mod0) || Key.ctrl(c.mod0)) {
+          zoom(x, Math.pow(1.05, c.dy*1.0 / gc.em));
+        } else {
+          boolean dirDet = tdx >= gc.em*2 || tdy >= gc.em;
+          if (!dirDet) {
+            tdx+= Math.abs(c.dx);
+            tdy+= Math.abs(c.dy);
+          }
+          if (dirDet && tdy > tdx*0.5) tly = Math.max(tly-c.dy, 0);
+        }
         posUpd();
       }
     }
@@ -308,14 +313,16 @@ public class TimelineTab extends GrrTab<DebuggerLayout> implements SerializableT
     public float tToXf(double t) { return (float) ((t-v0) * (dvi * w)); }
     private int tToX(double t) { float d = tToXf(t); return d>=BIG? BIG : d<=-BIG? -BIG : (int) d; }
     private double xToT(int x) { return x*dv/w+v0; }
-    public boolean scroll(int x, int y, float dx, float dy) {
-      double am = Math.pow(1.35, -dy/80);
+    private void zoom(int x, double am) {
       double c = xToT(x);
-      if (dv < 2e-9 && am<1) return true;
-      if (dv > 1e8 && am>1) return true;
+      if (dv < 2e-9 && am<1) return;
+      if (dv > 1e8 && am>1) return;
       v0 = c + (v0-c)*am;
       v1 = c + (v1-c)*am;
       posUpd();
+    }
+    public boolean scroll(int x, int y, float dx, float dy) {
+      zoom(x, Math.pow(1.35, -dy/80));
       return true;
     }
     
